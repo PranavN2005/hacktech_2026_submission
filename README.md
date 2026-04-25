@@ -31,6 +31,10 @@ pnpm install
 ```bash
 .venv/bin/uvicorn backend.main:app --port 8000
 ```
+```bash
+cd frontend
+pnpm dev
+```
 
 ### Verify the API
 
