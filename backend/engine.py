@@ -48,23 +48,22 @@ class SimulationEngine:
     and exposes a step() method that advances the opinion dynamics by one tick.
     """
 
-    def __init__(self, agents_path: str | Path, seed: Optional[int] = None):
+    def __init__(
+        self,
+        agents_path: str | Path,
+        seed: Optional[int] = None,
+        min_out_degree: int = 10,
+    ):
         self._seed = seed
         self._agents: list[dict] = _load_agents(Path(agents_path))
         self.N: int = len(self._agents)
 
         # ── Build directed follow graph ──────────────────────────────────
-        # scale_free_graph produces power-law in-degree (celebrities) and
-        # random out-degree (ordinary users), matching real platform topology.
-        raw = nx.scale_free_graph(self.N, seed=seed)
-        # Collapse multigraph edges and remove self-loops
-        G: nx.DiGraph = nx.DiGraph(raw)
-        G.remove_edges_from(nx.selfloop_edges(G))
-        self._G: nx.DiGraph = G
+        self._G: nx.DiGraph = _build_follow_graph(self.N, min_out_degree, seed)
 
         # A[i, j] = 1  iff  i follows j  (follows = row, followed = column)
         self._A: np.ndarray = (
-            nx.adjacency_matrix(G, nodelist=range(self.N))
+            nx.adjacency_matrix(self._G, nodelist=range(self.N))
             .toarray()
             .astype(np.float64)
         )
@@ -241,6 +240,59 @@ class SimulationEngine:
 
 
 # ── Utility ─────────────────────────────────────────────────────────────
+
+def _build_follow_graph(N: int, min_out_degree: int, seed: Optional[int]) -> nx.DiGraph:
+    """
+    Build a directed scale-free follow graph with a guaranteed minimum out-degree.
+
+    Step 1 – scale_free_graph with beta-heavy parameterisation:
+        Raising beta (edge-between-existing-nodes probability) increases the
+        average degree while preserving the power-law in-degree distribution.
+        alpha + beta + gamma must equal 1.0.
+
+    Step 2 – Post-process minimum out-degree:
+        For every node whose out-degree is still below `min_out_degree`, sample
+        uniformly from the pool of nodes it does not yet follow and add edges.
+        This ensures bounded confidence always has reachable neighbours while
+        leaving the celebrity in-degree structure untouched.
+    """
+    rng = np.random.default_rng(seed)
+
+    # Denser parameterisation: more beta = more inter-existing-node edges
+    raw = nx.scale_free_graph(
+        N,
+        alpha=0.30,   # prob: new node added, follows an existing node
+        beta=0.60,    # prob: new edge between two existing nodes (↑ density)
+        gamma=0.10,   # prob: new node added, gets followed by an existing node
+        delta_in=0.2,
+        delta_out=0.2,
+        seed=seed,
+    )
+    G: nx.DiGraph = nx.DiGraph(raw)
+    G.remove_edges_from(nx.selfloop_edges(G))
+
+    # Post-process: enforce minimum out-degree for every node
+    all_nodes = np.arange(N)
+    for node in range(N):
+        current_out = set(G.successors(node))
+        deficit = min_out_degree - len(current_out)
+        if deficit <= 0:
+            continue
+        # Candidate targets: nodes not already followed and not self
+        candidates = np.array(
+            [j for j in all_nodes if j != node and j not in current_out]
+        )
+        if len(candidates) == 0:
+            continue
+        chosen = rng.choice(
+            candidates,
+            size=min(deficit, len(candidates)),
+            replace=False,
+        )
+        G.add_edges_from((node, int(j)) for j in chosen)
+
+    return G
+
 
 def _load_agents(path: Path) -> list[dict]:
     if not path.exists():

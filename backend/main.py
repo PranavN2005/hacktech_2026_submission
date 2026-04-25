@@ -23,7 +23,7 @@ if not _AGENTS_PATH.exists():
         "Run persona_gen.py first to generate agents."
     )
 
-engine = SimulationEngine(_AGENTS_PATH, seed=42)
+engine = SimulationEngine(_AGENTS_PATH, seed=42, min_out_degree=10)
 
 # Allow local frontend dev servers during development.
 app.add_middleware(
