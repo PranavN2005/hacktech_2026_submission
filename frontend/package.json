@@ -17,5 +17,11 @@
     "svelte-check": "^4.4.6",
     "typescript": "~6.0.2",
     "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "vega": "^6.2.0",
+    "vega-embed": "^7.1.0",
+    "vega-lite": "^6.4.3",
+    "vis-network": "^10.0.2"
   }
 }

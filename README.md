@@ -13,6 +13,13 @@
 pip install -r requirements.txt
 ```
 
+### Install frontend packages
+
+```bash
+cd frontend
+pnpm install
+```
+
 ### Run tests
 
 ```bash
