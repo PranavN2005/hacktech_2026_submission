@@ -1,5 +1,6 @@
 <script lang="ts">
   import { simStore } from './store';
+  import { createStreamUrl } from './api';
 
   let eventSource: EventSource | null = null;
 
@@ -33,9 +34,7 @@
     simStore.startSimulation();
 
     const params = $simStore.params;
-    const url = `http://localhost:8000/stream?alpha=${params.alpha}&beta=${params.beta}&epsilon=${params.epsilon}&steps=${params.steps}&interval=${params.interval}`;
-
-    eventSource = new EventSource(url);
+    eventSource = new EventSource(createStreamUrl(params));
 
     eventSource.onmessage = (event) => {
       try {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { simStore } from './lib/store';
+  import { fetchInit } from './lib/api';
   import ControlPanel from './lib/ControlPanel.svelte';
   import NetworkGraph from './lib/NetworkGraph.svelte';
   import PolarizationChart from './lib/PolarizationChart.svelte';
@@ -13,16 +14,14 @@
     simStore.setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/init');
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      const data = await response.json();
+      const data = await fetchInit();
       simStore.initialize(data);
       connectionStatus = 'connected';
     } catch (err) {
       console.error('Failed to initialize:', err);
-      simStore.setError('Failed to connect to simulation server. Make sure the backend is running on port 8000.');
+      simStore.setError(
+        'Failed to connect to simulation server. Ensure backend is running on port 8000.'
+      );
       connectionStatus = 'error';
     }
   });

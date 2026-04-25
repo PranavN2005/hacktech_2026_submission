@@ -3,6 +3,7 @@ import { writable, derived } from 'svelte/store';
 // Types
 export interface Agent {
   id: number;
+  persona_id?: number | string;
   name: string;
   bio: string;
   initial_belief: number;
@@ -176,7 +177,7 @@ function createSimStore() {
     applyPreset: (presetName: 'chronological' | 'engagement' | 'diversity') => {
       const presets: Record<string, Partial<SimParams>> = {
         chronological: { alpha: 0.0, beta: 0.0, epsilon: 0.5 },
-        engagement: { alpha: 0.8, beta: 0.5, epsilon: 0.3 },
+        engagement: { alpha: 0.75, beta: 0.2, epsilon: 0.3 },
         diversity: { alpha: 0.1, beta: 0.1, epsilon: 0.8 }
       };
       update(state => ({

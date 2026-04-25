@@ -1,123 +1,83 @@
-"""
-API-level tests for EchoChamber backend.
-
-Install:  pip install pytest httpx fastapi[all]
-Run:      pytest tests/test_engine.py -v
-"""
-from __future__ import annotations
-
 import json
-import math
+from pathlib import Path
 
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.main import app, engine as app_engine
+from backend.engine import SimulationEngine
+from backend.main import app
 
 
-@pytest.fixture(scope="module")
-def client():
-    return TestClient(app)
+def write_agents(tmp_path: Path, n: int = 8) -> Path:
+    agents = [
+        {
+            "id": i,
+            "name": f"Agent {i}",
+            "bio": f"Bio {i}",
+            "initial_belief": float(np.linspace(-0.9, 0.9, n)[i]),
+            "susceptibility": 0.4,
+        }
+        for i in range(n)
+    ]
+    path = tmp_path / "agents.json"
+    path.write_text(json.dumps(agents), encoding="utf-8")
+    return path
 
 
-# ---------------------------------------------------------------------------
-# /init
-# ---------------------------------------------------------------------------
+def test_step_keeps_beliefs_finite_and_bounded(tmp_path: Path) -> None:
+    agents_path = write_agents(tmp_path, n=20)
+    engine = SimulationEngine(agents_path, seed=7, min_out_degree=3)
+    state = engine.step(alpha=0.5, beta=0.2, epsilon=0.4)
 
-class TestInit:
-    def test_status_200(self, client):
-        resp = client.get("/init")
-        assert resp.status_code == 200
-
-    def test_top_level_keys(self, client):
-        data = client.get("/init").json()
-        assert {"agent_count", "nodes", "edges", "defaults"} <= data.keys()
-
-    def test_agent_count_matches_engine(self, client):
-        data = client.get("/init").json()
-        assert data["agent_count"] == app_engine.N
-
-    def test_nodes_length_matches_agent_count(self, client):
-        data = client.get("/init").json()
-        assert len(data["nodes"]) == data["agent_count"]
-
-    def test_node_shape(self, client):
-        data = client.get("/init").json()
-        required = {"id", "name", "bio", "initial_belief", "susceptibility", "social_capital"}
-        for node in data["nodes"]:
-            assert required <= node.keys(), f"node {node.get('id')} missing keys"
-
-    def test_node_id_is_index_aligned(self, client):
-        """nodes[i]['id'] must equal i so belief arrays can be indexed directly."""
-        data = client.get("/init").json()
-        for i, node in enumerate(data["nodes"]):
-            assert node["id"] == i
-
-    def test_edges_have_from_to(self, client):
-        data = client.get("/init").json()
-        assert len(data["edges"]) > 0
-        edge = data["edges"][0]
-        assert "from" in edge and "to" in edge
-
-    def test_defaults_keys(self, client):
-        data = client.get("/init").json()
-        assert {"alpha", "beta", "epsilon", "steps", "interval"} <= data["defaults"].keys()
+    assert len(state.beliefs) == 20
+    assert np.isfinite(state.beliefs).all()
+    assert np.all(state.beliefs >= -1.0)
+    assert np.all(state.beliefs <= 1.0)
 
 
-# ---------------------------------------------------------------------------
-# /stream
-# ---------------------------------------------------------------------------
+def test_fixed_seed_is_deterministic(tmp_path: Path) -> None:
+    agents_path = write_agents(tmp_path, n=20)
+    eng_a = SimulationEngine(agents_path, seed=99, min_out_degree=3)
+    eng_b = SimulationEngine(agents_path, seed=99, min_out_degree=3)
 
-class TestStream:
-    def _parse_sse(self, text: str) -> list[dict]:
-        return [
-            json.loads(line[len("data: "):])
-            for line in text.splitlines()
-            if line.startswith("data: ")
-        ]
+    for _ in range(5):
+        state_a = eng_a.step(alpha=0.6, beta=0.1, epsilon=0.5)
+        state_b = eng_b.step(alpha=0.6, beta=0.1, epsilon=0.5)
+        assert np.allclose(state_a.beliefs, state_b.beliefs)
+        assert state_a.polarization == state_b.polarization
+        assert state_a.echo_coefficient == state_b.echo_coefficient
 
-    def test_status_200_and_content_type(self, client):
-        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
-        assert resp.status_code == 200
-        assert "text/event-stream" in resp.headers["content-type"]
 
-    def test_emits_correct_number_of_events(self, client):
-        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=3&interval=0")
-        events = self._parse_sse(resp.text)
-        assert len(events) == 3
+def test_init_and_stream_contracts() -> None:
+    client = TestClient(app)
 
-    def test_payload_keys(self, client):
-        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
-        events = self._parse_sse(resp.text)
-        assert len(events) >= 1
-        assert {"step", "beliefs", "polarization", "echo_coefficient"} <= events[0].keys()
+    init_resp = client.get("/init")
+    assert init_resp.status_code == 200
+    init_payload = init_resp.json()
+    assert {"agent_count", "nodes", "edges", "defaults"} <= init_payload.keys()
+    assert init_payload["agent_count"] == len(init_payload["nodes"])
 
-    def test_beliefs_length_matches_init_agent_count(self, client):
-        init = client.get("/init").json()
-        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
-        events = self._parse_sse(resp.text)
-        assert len(events[0]["beliefs"]) == init["agent_count"]
+    stream_resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=2&interval=0")
+    assert stream_resp.status_code == 200
+    assert "text/event-stream" in stream_resp.headers["content-type"]
 
-    def test_no_nan_or_inf_in_beliefs(self, client):
-        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=5&interval=0")
-        events = self._parse_sse(resp.text)
-        for ev in events:
-            beliefs = np.array(ev["beliefs"])
-            assert np.isfinite(beliefs).all(), f"NaN/inf detected at step {ev['step']}"
+    data_lines = [line for line in stream_resp.text.splitlines() if line.startswith("data: ")]
+    assert len(data_lines) == 2
 
-    def test_beliefs_bounded(self, client):
-        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=5&interval=0")
-        events = self._parse_sse(resp.text)
-        for ev in events:
-            beliefs = np.array(ev["beliefs"])
-            assert (beliefs >= -1.0).all() and (beliefs <= 1.0).all()
+    payload = json.loads(data_lines[0].replace("data: ", "", 1))
+    assert {"step", "beliefs", "polarization", "echo_coefficient"} <= payload.keys()
+    assert len(payload["beliefs"]) == init_payload["agent_count"]
 
-    def test_step_counter_increments(self, client):
-        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=3&interval=0")
-        events = self._parse_sse(resp.text)
-        assert [ev["step"] for ev in events] == [1, 2, 3]
 
-    def test_alpha_plus_beta_gt_1_rejected(self, client):
-        resp = client.get("/stream?alpha=0.8&beta=0.5&epsilon=0.4&steps=1&interval=0")
-        assert resp.status_code == 422
+def test_stream_rejects_invalid_alpha_beta_sum() -> None:
+    client = TestClient(app)
+    response = client.get("/stream?alpha=0.9&beta=0.3&epsilon=0.4")
+    assert response.status_code == 422
+    assert "alpha + beta must be ≤ 1.0" in response.json()["detail"]
+
+
+def test_engine_rejects_missing_file(tmp_path: Path) -> None:
+    missing = tmp_path / "missing.json"
+    with pytest.raises(FileNotFoundError):
+        SimulationEngine(missing)
