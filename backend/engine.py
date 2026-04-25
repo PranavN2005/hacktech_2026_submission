@@ -178,6 +178,11 @@ class SimulationEngine:
     def agents(self) -> list[dict]:
         return self._agents
 
+    @property
+    def social_capital(self) -> np.ndarray:
+        """In-degree of each agent (shape (N,)). Index i matches beliefs[i]."""
+        return self._C
+
     # ── Internal helpers ────────────────────────────────────────────────
 
     def _compute_metrics(

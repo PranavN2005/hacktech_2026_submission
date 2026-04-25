@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
@@ -14,18 +15,17 @@ from backend.engine import SimulationEngine
 # App + engine setup
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="EchoChamber Backend", version="0.2.0")
+app = FastAPI(title="EchoChamber Backend", version="0.3.0")
 
-_AGENTS_PATH = Path("agents.json")
+_AGENTS_PATH = Path(os.environ.get("AGENTS_PATH", "agents_500_pro_max.json"))
 if not _AGENTS_PATH.exists():
     raise RuntimeError(
-        f"agents.json not found at {_AGENTS_PATH.resolve()}. "
-        "Run persona_gen.py first to generate agents."
+        f"Agents file not found at {_AGENTS_PATH.resolve()}. "
+        "Set the AGENTS_PATH env var or ensure agents_500_pro_max.json is present."
     )
 
 engine = SimulationEngine(_AGENTS_PATH, seed=42, min_out_degree=10)
 
-# Allow local frontend dev servers during development.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -47,33 +47,45 @@ async def health() -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Static graph data (called once by the frontend at startup)
+# Init – static graph + agent metadata (called once at frontend startup)
 # ---------------------------------------------------------------------------
 
-@app.get("/agents")
-async def get_agents() -> list[dict]:
-    """Return all agent metadata for the node inspector panel."""
-    return engine.agents
+_DEFAULTS = {
+    "alpha": 0.5,
+    "beta": 0.2,
+    "epsilon": 0.4,
+    "steps": 100,
+    "interval": 0.1,
+}
 
 
-@app.get("/graph")
-async def get_graph() -> dict:
+@app.get("/init")
+async def init() -> dict:
     """
-    Return the static follow graph topology for vis.js initialisation.
+    Return agent metadata, follow-graph topology, and simulation defaults.
 
-    nodes  – list of { id, label, social_capital }
-    edges  – list of { from, to }  (from follows to)
+    Node ordering in `nodes` is identical to the belief-array index order
+    emitted by `/stream`, so `nodes[i].id == i` always holds.
     """
+    sc = engine.social_capital  # shape (N,), index-aligned with beliefs
     nodes = [
         {
-            "id": a["id"],
-            "label": a["name"],
-            "social_capital": int(engine._C[a["id"]]),
+            "id": int(a["id"]),
+            "name": a["name"],
+            "bio": a["bio"],
+            "initial_belief": float(a["initial_belief"]),
+            "susceptibility": float(a["susceptibility"]),
+            "social_capital": int(sc[i]),
         }
-        for a in engine.agents
+        for i, a in enumerate(engine.agents)
     ]
-    edges = [{"from": i, "to": j} for i, j in engine.graph_edges]
-    return {"nodes": nodes, "edges": edges}
+    edges = [{"from": int(i), "to": int(j)} for i, j in engine.graph_edges]
+    return {
+        "agent_count": engine.N,
+        "nodes": nodes,
+        "edges": edges,
+        "defaults": _DEFAULTS,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -94,9 +106,9 @@ async def stream(
     Each event payload:
         {
             "step":             int,
-            "beliefs":          float[N],   // current belief of every agent
-            "polarization":     float,      // Esteban-Ray index
-            "echo_coefficient": float       // echo-chamber coefficient
+            "beliefs":          float[N],
+            "polarization":     float,
+            "echo_coefficient": float
         }
     """
     if alpha + beta > 1.0:
