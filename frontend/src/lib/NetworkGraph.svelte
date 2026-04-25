@@ -17,20 +17,21 @@
       const t = (belief + 1); // 0 to 1 as belief goes from -1 to 0
       const r = Math.round(59 + (168 - 59) * t);
       const g = Math.round(130 + (85 - 130) * t);
-      const b = Math.round(246 + (247 - 246) * t);
+      const b = Math.round(247 + (85 - 247) * t);
       return `rgb(${r}, ${g}, ${b})`;
     } else {
       const t = belief; // 0 to 1 as belief goes from 0 to 1
       const r = Math.round(168 + (239 - 168) * t);
       const g = Math.round(85 + (68 - 85) * t);
-      const b = Math.round(247 + (68 - 247) * t);
+      const b = Math.round(85 + (68 - 85) * t);
       return `rgb(${r}, ${g}, ${b})`;
     }
   }
 
   function getNodeSize(socialCapital: number, maxCapital: number): number {
-    const minSize = 8;
-    const maxSize = 20;
+    // Reduced node sizes for better edge visibility
+    const minSize = 4;
+    const maxSize = 12;
     const normalized = Math.sqrt(socialCapital / Math.max(maxCapital, 1));
     return minSize + (maxSize - minSize) * normalized;
   }
@@ -40,80 +41,115 @@
     if (network) return; // Already initialized
     
     isInitializing = true;
-    console.log('[v0] Initializing network with', agents.length, 'agents and', edges.length, 'edges');
 
     const maxCapital = Math.max(...agents.map(a => a.social_capital || 100));
 
-    // Create nodes with belief-based colors
+    // Create nodes with belief-based colors - smaller sizes
     const nodes = agents.map((agent, i) => {
       const belief = beliefs[i] ?? agent.initial_belief;
+      const color = beliefToColor(belief);
       return {
         id: agent.id,
         color: {
-          background: beliefToColor(belief),
-          border: 'rgba(255,255,255,0.3)',
-          highlight: { background: beliefToColor(belief), border: '#ffffff' },
-          hover: { background: beliefToColor(belief), border: '#ffffff' }
+          background: color,
+          border: 'rgba(255,255,255,0.5)',
+          highlight: { background: color, border: '#ffffff' },
+          hover: { background: color, border: '#ffffff' }
         },
         size: getNodeSize(agent.social_capital || 100, maxCapital),
-        title: `${agent.name}\nBelief: ${belief.toFixed(3)}`
+        title: `${agent.name}\nBelief: ${belief.toFixed(3)}\nFollowers: ${agent.social_capital || 0}`
       };
     });
 
-    // Create directed edges
+    // Create directed edges with visible arrows and subtle gradient coloring
     const visEdges = edges.map((edge, i) => ({
       id: i,
       from: edge.from,
       to: edge.to,
-      arrows: { to: { enabled: true, scaleFactor: 0.3 } },
-      color: { color: 'rgba(100, 116, 139, 0.15)', highlight: '#3b82f6' },
-      width: 0.5,
-      smooth: false
+      arrows: {
+        to: {
+          enabled: true,
+          scaleFactor: 0.4,
+          type: 'arrow'
+        }
+      },
+      color: {
+        color: 'rgba(147, 157, 177, 0.25)',
+        highlight: '#60a5fa',
+        hover: '#60a5fa',
+        opacity: 0.6
+      },
+      width: 0.8,
+      smooth: {
+        enabled: true,
+        type: 'continuous',
+        roundness: 0.5
+      },
+      hoverWidth: 1.5,
+      selectionWidth: 2
     }));
 
-    console.log('[v0] Creating DataSets...');
     nodesDataset = new DataSet(nodes);
     edgesDataset = new DataSet(visEdges);
 
     const options = {
       nodes: {
         shape: 'dot',
-        borderWidth: 1,
-        borderWidthSelected: 2,
-        font: { size: 0 } // No labels for performance
+        borderWidth: 1.5,
+        borderWidthSelected: 3,
+        font: { size: 0 }, // No labels for performance
+        shadow: {
+          enabled: true,
+          color: 'rgba(0,0,0,0.3)',
+          size: 4,
+          x: 0,
+          y: 2
+        }
       },
       edges: {
-        smooth: false,
-        selectionWidth: 1
+        smooth: {
+          enabled: true,
+          type: 'continuous',
+          roundness: 0.5
+        },
+        selectionWidth: 2,
+        hoverWidth: 1.5
       },
       physics: {
         enabled: true,
         solver: 'barnesHut',
         barnesHut: {
-          gravitationalConstant: -2000,
-          centralGravity: 0.3,
-          springLength: 80,
-          springConstant: 0.04,
-          damping: 0.09,
-          avoidOverlap: 0.1
+          gravitationalConstant: -3000,
+          centralGravity: 0.4,
+          springLength: 120,
+          springConstant: 0.06,
+          damping: 0.15,
+          avoidOverlap: 0.3
         },
         stabilization: {
           enabled: true,
-          iterations: 150,
+          iterations: 200,
           updateInterval: 25,
           fit: true
         },
-        maxVelocity: 50,
-        minVelocity: 0.75
+        maxVelocity: 80,
+        minVelocity: 0.1,
+        timestep: 0.5
       },
       interaction: {
         hover: true,
-        tooltipDelay: 100,
-        hideEdgesOnDrag: true,
-        hideEdgesOnZoom: true,
+        tooltipDelay: 50,
+        hideEdgesOnDrag: false,
+        hideEdgesOnZoom: false,
         dragNodes: true,
         dragView: true,
-        zoomView: true
+        zoomView: true,
+        multiselect: true,
+        navigationButtons: false,
+        keyboard: {
+          enabled: true,
+          speed: { x: 10, y: 10, zoom: 0.02 }
+        }
       },
       layout: {
         improvedLayout: false,
@@ -121,7 +157,6 @@
       }
     };
 
-    console.log('[v0] Creating Network...');
     network = new Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
     // Handle node selection
@@ -137,28 +172,65 @@
       simStore.selectAgent(null);
     });
 
-    // Disable physics after stabilization
+    // Re-enable physics when dragging for bouncy interaction
+    network.on('dragStart', () => {
+      if (isStabilized && network) {
+        network.setOptions({
+          physics: {
+            enabled: true,
+            solver: 'barnesHut',
+            barnesHut: {
+              gravitationalConstant: -1500,
+              centralGravity: 0.2,
+              springLength: 100,
+              springConstant: 0.08,
+              damping: 0.3,
+              avoidOverlap: 0.2
+            },
+            maxVelocity: 50,
+            minVelocity: 0.5
+          }
+        });
+      }
+    });
+
+    // Disable physics after drag ends (with delay for bounce effect)
+    network.on('dragEnd', () => {
+      if (isStabilized && network) {
+        setTimeout(() => {
+          network?.setOptions({ physics: { enabled: false } });
+        }, 800);
+      }
+    });
+
+    // Handle stabilization complete
     network.once('stabilizationIterationsDone', () => {
-      console.log('[v0] Network stabilized, disabling physics');
       isStabilized = true;
       isInitializing = false;
       network?.setOptions({ physics: { enabled: false } });
+      network?.fit({ animation: { duration: 500, easingFunction: 'easeInOutQuad' } });
     });
   }
 
   function updateBeliefs(beliefs: number[], agents: Agent[]) {
     if (!nodesDataset || beliefs.length === 0 || !isStabilized) return;
 
-    const updates = agents.map((agent, i) => ({
-      id: agent.id,
-      color: {
-        background: beliefToColor(beliefs[i]),
-        border: 'rgba(255,255,255,0.3)',
-        highlight: { background: beliefToColor(beliefs[i]), border: '#ffffff' },
-        hover: { background: beliefToColor(beliefs[i]), border: '#ffffff' }
-      },
-      title: `${agent.name}\nBelief: ${beliefs[i].toFixed(3)}`
-    }));
+    const maxCapital = Math.max(...agents.map(a => a.social_capital || 100));
+
+    const updates = agents.map((agent, i) => {
+      const color = beliefToColor(beliefs[i]);
+      return {
+        id: agent.id,
+        color: {
+          background: color,
+          border: 'rgba(255,255,255,0.5)',
+          highlight: { background: color, border: '#ffffff' },
+          hover: { background: color, border: '#ffffff' }
+        },
+        size: getNodeSize(agent.social_capital || 100, maxCapital),
+        title: `${agent.name}\nBelief: ${beliefs[i].toFixed(3)}\nFollowers: ${agent.social_capital || 0}`
+      };
+    });
 
     nodesDataset.update(updates);
   }
@@ -193,18 +265,18 @@
   
   <div class="network-overlay">
     <div class="network-legend">
-      <div class="legend-item">
-        <span class="legend-dot" style="background: #3b82f6;"></span>
-        <span>Liberal (-1)</span>
+      <div class="legend-title">Belief Spectrum</div>
+      <div class="legend-gradient">
+        <div class="gradient-bar"></div>
+        <div class="gradient-labels">
+          <span>-1 Liberal</span>
+          <span>0</span>
+          <span>+1 Conservative</span>
+        </div>
       </div>
-      <div class="legend-item">
-        <span class="legend-dot" style="background: #a855f7;"></span>
-        <span>Moderate (0)</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-dot" style="background: #ef4444;"></span>
-        <span>Conservative (+1)</span>
-      </div>
+    </div>
+    <div class="network-controls">
+      <span class="control-hint">Drag nodes to interact</span>
     </div>
   </div>
 
@@ -227,7 +299,7 @@
     width: 100%;
     height: 100%;
     min-height: 400px;
-    background: var(--bg-primary);
+    background: linear-gradient(135deg, #0a0c10 0%, #111318 100%);
     border-radius: 8px;
     overflow: hidden;
   }
@@ -241,32 +313,63 @@
     position: absolute;
     bottom: 12px;
     left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
     pointer-events: none;
   }
 
   .network-legend {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    background: rgba(15, 17, 23, 0.9);
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid var(--border-color);
-    font-size: 11px;
-    color: var(--text-secondary);
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
     gap: 8px;
+    background: rgba(15, 17, 23, 0.92);
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
   }
 
-  .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
+  .legend-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .legend-gradient {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .gradient-bar {
+    width: 160px;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #3b82f6, #a855f7, #ef4444);
+  }
+
+  .gradient-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .network-controls {
+    background: rgba(15, 17, 23, 0.92);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+  }
+
+  .control-hint {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
   }
 
   .loading-overlay {
@@ -277,16 +380,16 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    background: var(--bg-primary);
-    color: var(--text-secondary);
+    background: linear-gradient(135deg, #0a0c10 0%, #111318 100%);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 14px;
   }
 
   .loading-spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid var(--border-color);
-    border-top-color: var(--accent);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #3b82f6;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
