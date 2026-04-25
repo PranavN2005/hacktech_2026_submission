@@ -1,188 +1,252 @@
+"""
+SimulationEngine: directed follow graph + opinion dynamics.
+
+Graph convention
+----------------
+    Edge i → j  means "agent i follows agent j".
+    A[i, j] = 1  ⟹  i follows j  ⟹  j's posts can appear in i's feed.
+    Social capital  c_j = in-degree(j) = number of followers of j.
+
+Two-layer system
+----------------
+    Layer 1 - Follow graph A (static):
+        Binary adjacency matrix built once via scale_free_graph.
+        A[i,j] = 0 means j can never influence i, regardless of parameters.
+
+    Layer 2 - Feed matrix F(t) (recomputed each step):
+        Continuous curation weights over the follow graph.
+        F[i,j] > 0  only where  A[i,j] = 1.
+        Controlled by platform parameters alpha (echo-chamber strength)
+        and beta (virality / outrage bias).
+"""
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Optional
 
 import networkx as nx
 import numpy as np
 
+# Esteban-Ray constants
+_RHO: float = 1.3   # polarization sensitivity (literature standard)
+_K_ER: float = 1.0  # scale constant
+
 
 @dataclass(frozen=True)
-class StepState:
+class SimState:
     step: int
-    beliefs: np.ndarray
-    polarization: float
-    echo_coefficient: float
+    beliefs: np.ndarray      # shape (N,), values ∈ [-1, 1]
+    polarization: float      # Esteban-Ray index ≥ 0
+    echo_coefficient: float  # ∈ [0, 1]
 
 
 class SimulationEngine:
-    def __init__(
-        self,
-        n: int = 500,
-        m: int = 3,
-        seed: int = 42,
-        agents_path: str | None = None,
-    ) -> None:
-        if agents_path is not None:
-            self.agent_ids, initial_beliefs, susceptibility = self._load_agents(agents_path)
-            n = int(initial_beliefs.shape[0])
-        else:
-            if n <= 1:
-                raise ValueError("n must be > 1")
-            self.agent_ids = [str(i) for i in range(n)]
-            initial_beliefs = None
-            susceptibility = None
+    """
+    Loads agents from agents.json, builds a directed scale-free follow graph,
+    and exposes a step() method that advances the opinion dynamics by one tick.
+    """
 
-        if m <= 0 or m >= n:
-            raise ValueError("m must be in [1, n-1]")
+    def __init__(self, agents_path: str | Path, seed: Optional[int] = None):
+        self._seed = seed
+        self._agents: list[dict] = _load_agents(Path(agents_path))
+        self.N: int = len(self._agents)
 
-        self.n = n
-        self.m = m
-        self.seed = seed
-        self._rng = np.random.default_rng(seed)
+        # ── Build directed follow graph ──────────────────────────────────
+        # scale_free_graph produces power-law in-degree (celebrities) and
+        # random out-degree (ordinary users), matching real platform topology.
+        raw = nx.scale_free_graph(self.N, seed=seed)
+        # Collapse multigraph edges and remove self-loops
+        G: nx.DiGraph = nx.DiGraph(raw)
+        G.remove_edges_from(nx.selfloop_edges(G))
+        self._G: nx.DiGraph = G
 
-        graph = nx.barabasi_albert_graph(n=n, m=m, seed=seed)
-        self._adjacency = nx.to_numpy_array(graph, dtype=np.float64)
-        np.fill_diagonal(self._adjacency, 0.0)
+        # A[i, j] = 1  iff  i follows j  (follows = row, followed = column)
+        self._A: np.ndarray = (
+            nx.adjacency_matrix(G, nodelist=range(self.N))
+            .toarray()
+            .astype(np.float64)
+        )
 
-        self._social_capital = self._adjacency.sum(axis=0)
-        cap_max = float(self._social_capital.max())
-        if cap_max > 0:
-            self._social_capital = self._social_capital / cap_max
-        else:
-            self._social_capital = np.ones(n, dtype=np.float64)
+        # Social capital c_j = in-degree of j = column sum of A
+        self._C: np.ndarray = self._A.sum(axis=0)  # shape (N,)
 
-        if initial_beliefs is None:
-            self._initial_beliefs = self._rng.uniform(-1.0, 1.0, size=n)
-        else:
-            self._initial_beliefs = initial_beliefs
+        # Per-agent parameters
+        self._B0: np.ndarray = np.array(
+            [a["initial_belief"] for a in self._agents], dtype=np.float64
+        )
+        self._sigma: np.ndarray = np.array(
+            [a["susceptibility"] for a in self._agents], dtype=np.float64
+        )
 
-        if susceptibility is None:
-            self._susceptibility = self._rng.uniform(0.1, 0.9, size=n)
-        else:
-            self._susceptibility = susceptibility
+        # Mutable state
+        self._B: np.ndarray = self._B0.copy()
+        self._current_step: int = 0
 
-        self.current_step = 0
-        self.beliefs = self._initial_beliefs.copy()
+        # Cached from the most recent step() call (used by get_metrics)
+        self._last_F: np.ndarray = np.zeros((self.N, self.N))
+
+    # ── Public API ──────────────────────────────────────────────────────
 
     def reset(self) -> None:
-        self.current_step = 0
-        self.beliefs = self._initial_beliefs.copy()
+        """Restore beliefs to initial values and reset the step counter."""
+        self._B = self._B0.copy()
+        self._current_step = 0
+        self._last_F = np.zeros((self.N, self.N))
 
-    def step(self, alpha: float, beta: float, epsilon: float) -> StepState:
-        beliefs_col = self.beliefs[:, None]
-        beliefs_row = self.beliefs[None, :]
-        diff = np.abs(beliefs_col - beliefs_row)
+    def step(self, alpha: float, beta: float, epsilon: float) -> SimState:
+        """
+        Advance the simulation by one time step.
 
-        alpha = float(np.clip(alpha, 0.0, 1.0))
-        beta = float(np.clip(beta, 0.0, 1.0))
-        epsilon = float(np.clip(epsilon, 0.0, 2.0))
+        Parameters
+        ----------
+        alpha   : echo-chamber strength ∈ [0, 1]
+        beta    : virality / outrage bias ∈ [0, 1]
+        epsilon : bounded-confidence threshold ∈ (0, 2]
+        """
+        B = self._B
 
-        baseline = max(0.0, 1.0 - alpha - beta)
-        homophily = 1.0 - (diff / 2.0)
-        extremity = np.abs(self.beliefs)[None, :]
+        # ── Layer 2: Feed matrix F(t) ─────────────────────────────────
+        # Raw algorithmic score:
+        #   S[i,j] = c_j · [α(1 − |b_i−b_j|/2) + β|b_j| + (1−α−β)]
+        belief_diff = np.abs(B[:, None] - B[None, :])      # (N, N)
 
-        raw_scores = (
-            self._social_capital[None, :]
-            * (alpha * homophily + beta * extremity + baseline)
-            * self._adjacency
+        S = self._C[None, :] * (
+            alpha * (1.0 - belief_diff / 2.0)              # homophily
+            + beta * np.abs(B[None, :])                    # virality
+            + (1.0 - alpha - beta)                         # baseline / chronological
+        )
+        S *= self._A        # enforce follow graph: S[i,j]=0 where A[i,j]=0
+
+        # Row-normalise → feed probability F[i,j]
+        row_sums = S.sum(axis=1, keepdims=True)
+        F = np.divide(S, row_sums, where=row_sums > 0, out=np.zeros_like(S))
+        self._last_F = F
+
+        # ── Bounded confidence (Deffuant-Weisbuch) ───────────────────
+        # W̃[i,j] = F[i,j] if |b_i−b_j| ≤ ε, else 0
+        W_tilde = np.where(belief_diff <= epsilon, F, 0.0)
+
+        # Row-normalise W̃ → W* (agents with no reachable neighbours get 0 row)
+        wt_sums = W_tilde.sum(axis=1, keepdims=True)
+        W_star = np.divide(
+            W_tilde, wt_sums, where=wt_sums > 0, out=np.zeros_like(W_tilde)
         )
 
-        feed = self._row_normalize(raw_scores)
+        # ── Belief update ─────────────────────────────────────────────
+        # b_i(t+1) = b_i(t) + σ_i · Σ_j W*_ij · (b_j − b_i)
+        #          = b_i(t) + σ_i · [(W*·B)[i] − b_i · rowsum(W*)[i]]
+        wstar_row_sum = W_star.sum(axis=1)          # 1 where node has influence, 0 otherwise
+        delta = self._sigma * (W_star @ B - B * wstar_row_sum)
+        self._B = np.clip(B + delta, -1.0, 1.0)
+        self._current_step += 1
 
-        confidence_mask = (diff <= epsilon).astype(np.float64)
-        effective = feed * confidence_mask
-        influence = self._row_normalize(effective)
-
-        delta = influence @ self.beliefs - self.beliefs
-        updated = self.beliefs + self._susceptibility * delta
-        self.beliefs = np.clip(updated, -1.0, 1.0)
-
-        polarization = float(np.var(self.beliefs))
-        echo_coefficient = self._echo_coefficient(diff=diff, feed=feed)
-
-        state = StepState(
-            step=self.current_step,
-            beliefs=self.beliefs.copy(),
-            polarization=polarization,
-            echo_coefficient=echo_coefficient,
-        )
-        self.current_step += 1
-        return state
-
-    @staticmethod
-    def _row_normalize(matrix: np.ndarray) -> np.ndarray:
-        row_sums = matrix.sum(axis=1, keepdims=True)
-        return np.divide(
-            matrix,
-            row_sums,
-            out=np.zeros_like(matrix, dtype=np.float64),
-            where=row_sums > 0,
+        pol, echo = self._compute_metrics(F, belief_diff)
+        return SimState(
+            step=self._current_step,
+            beliefs=self._B.copy(),
+            polarization=pol,
+            echo_coefficient=echo,
         )
 
-    def _echo_coefficient(self, diff: np.ndarray, feed: np.ndarray) -> float:
-        off_diag = ~np.eye(self.n, dtype=bool)
-        population_distance = float(diff[off_diag].mean())
-        if population_distance == 0.0:
+    def get_metrics(self) -> dict:
+        """
+        Return current polarization metrics plus per-cluster belief centroids.
+        Safe to call between step() calls.
+        """
+        B = self._B
+        belief_diff = np.abs(B[:, None] - B[None, :])
+        pol, echo = self._compute_metrics(self._last_F, belief_diff)
+        communities = self._louvain_communities()
+        centroids = {
+            f"cluster_{k}": float(B[list(c)].mean())
+            for k, c in enumerate(communities)
+        }
+        return {
+            "step": self._current_step,
+            "polarization": pol,
+            "echo_coefficient": echo,
+            "cluster_centroids": centroids,
+        }
+
+    @property
+    def graph_edges(self) -> list[tuple[int, int]]:
+        """All directed edges (i, j) meaning i follows j."""
+        return list(self._G.edges())
+
+    @property
+    def agents(self) -> list[dict]:
+        return self._agents
+
+    # ── Internal helpers ────────────────────────────────────────────────
+
+    def _compute_metrics(
+        self, F: np.ndarray, belief_diff: np.ndarray
+    ) -> tuple[float, float]:
+        return self._esteban_ray(self._B), self._echo_coefficient(F, belief_diff)
+
+    def _esteban_ray(self, B: np.ndarray) -> float:
+        """
+        Esteban-Ray polarization index.
+        P = K · Σ_k Σ_m π_k^(1+ρ) · π_m · |C_k − C_m|
+
+        Communities are detected on the follow graph topology via Louvain,
+        then characterised by their mean belief.
+        """
+        communities = self._louvain_communities()
+        if len(communities) < 2:
             return 0.0
 
-        feed_distance = float((feed * diff).sum(axis=1).mean())
-        raw_echo = 1.0 - (feed_distance / population_distance)
-        return float(np.clip(raw_echo, -1.0, 1.0))
+        pop = float(self.N)
+        pi = np.array([len(c) / pop for c in communities])
+        centroids = np.array([B[list(c)].mean() for c in communities])
 
-    @staticmethod
-    def _load_agents(agents_path: str) -> tuple[list[str], np.ndarray, np.ndarray]:
-        path = Path(agents_path)
-        if not path.exists():
-            raise ValueError(f"agents file not found: {agents_path}")
-
-        raw = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(raw, list):
-            raise ValueError("agents file must contain a JSON array")
-        if len(raw) < 2:
-            raise ValueError("agents file must contain at least 2 agents")
-
-        agent_ids: list[str] = []
-        beliefs: list[float] = []
-        susceptibility: list[float] = []
-        seen_ids: set[str] = set()
-
-        for idx, agent in enumerate(raw):
-            if not isinstance(agent, dict):
-                raise ValueError(f"agent at index {idx} must be an object")
-
-            agent_id = SimulationEngine._require_value(agent, "id", idx)
-            belief_raw = SimulationEngine._require_value(agent, "initial_belief", idx)
-            susceptibility_raw = SimulationEngine._require_value(agent, "susceptibility", idx)
-
-            agent_id = str(agent_id)
-            if not agent_id:
-                raise ValueError(f"agent at index {idx} has empty id")
-            if agent_id in seen_ids:
-                raise ValueError(f"duplicate agent id: {agent_id}")
-            seen_ids.add(agent_id)
-
-            belief = float(belief_raw)
-            sigma = float(susceptibility_raw)
-            if belief < -1.0 or belief > 1.0:
-                raise ValueError(f"agent {agent_id} has out-of-range initial_belief: {belief}")
-            if sigma <= 0.0 or sigma > 1.0:
-                raise ValueError(f"agent {agent_id} has out-of-range susceptibility: {sigma}")
-
-            agent_ids.append(agent_id)
-            beliefs.append(belief)
-            susceptibility.append(sigma)
-
-        return (
-            agent_ids,
-            np.array(beliefs, dtype=np.float64),
-            np.array(susceptibility, dtype=np.float64),
+        # Vectorised double sum
+        pi_row = pi[:, None]   # (K, 1)
+        pi_col = pi[None, :]   # (1, K)
+        c_row = centroids[:, None]
+        c_col = centroids[None, :]
+        total = float(
+            ((pi_row ** (1.0 + _RHO)) * pi_col * np.abs(c_row - c_col)).sum()
         )
+        return _K_ER * total
 
-    @staticmethod
-    def _require_value(agent: dict[str, Any], key: str, index: int) -> Any:
-        if key not in agent:
-            raise ValueError(f"agent at index {index} missing required key '{key}'")
-        return agent[key]
+    def _echo_coefficient(self, F: np.ndarray, belief_diff: np.ndarray) -> float:
+        """
+        E(t) = 1 − mean_feed_distance(t) / mean_population_distance(t)
+
+        mean_feed_distance   : average |b_i−b_j| weighted by F[i,j] over all edges
+        mean_population_dist : average |b_i−b_j| over all (i,j) pairs
+        """
+        mean_pop = float(belief_diff.mean())
+        if mean_pop == 0.0:
+            return 0.0
+
+        feed_weights = F * self._A          # non-zero only on actual edges
+        total_weight = float(feed_weights.sum())
+        if total_weight == 0.0:
+            return 0.0
+
+        mean_feed = float((feed_weights * belief_diff).sum()) / total_weight
+        return float(1.0 - mean_feed / mean_pop)
+
+    def _louvain_communities(self):
+        """
+        Louvain community detection on the undirected projection of the follow
+        graph. Seed is fixed for reproducibility.
+        """
+        G_und = self._G.to_undirected()
+        return list(nx.community.louvain_communities(G_und, seed=self._seed))
+
+
+# ── Utility ─────────────────────────────────────────────────────────────
+
+def _load_agents(path: Path) -> list[dict]:
+    if not path.exists():
+        raise FileNotFoundError(f"agents file not found: {path}")
+    with path.open(encoding="utf-8") as f:
+        agents = json.load(f)
+    if not isinstance(agents, list) or not agents:
+        raise ValueError("agents.json must be a non-empty JSON array.")
+    return agents
