@@ -1,4 +1,4 @@
-import type { SimParams } from './store';
+import type { SimParams, DynamicsConfig } from './store';
 
 export interface InitPayload {
   agent_count: number;
@@ -28,13 +28,23 @@ export async function fetchInit(agentQuantity?: number): Promise<InitPayload> {
   return response.json() as Promise<InitPayload>;
 }
 
-export function createStreamUrl(params: SimParams): string {
+export function createStreamUrl(params: SimParams, dynamics: DynamicsConfig): string {
   const searchParams = new URLSearchParams({
+    // Platform / legacy params
     alpha: String(params.alpha),
     beta: String(params.beta),
     epsilon: String(params.epsilon),
     steps: String(params.steps),
     interval: String(params.interval),
+    // Dynamics model
+    model_type: dynamics.model_type,
+    exposure_mode: dynamics.exposure_mode,
+    top_k_visible: String(dynamics.top_k_visible),
+    selective_exposure_beta: String(dynamics.selective_exposure_beta),
+    distance_decay_alpha: String(dynamics.distance_decay_alpha),
+    repulsion_threshold_rho: String(dynamics.repulsion_threshold_rho),
+    repulsion_strength_gamma: String(dynamics.repulsion_strength_gamma),
+    noise_sigma: String(dynamics.noise_sigma),
   });
   return `${API_BASE}/stream?${searchParams.toString()}`;
 }

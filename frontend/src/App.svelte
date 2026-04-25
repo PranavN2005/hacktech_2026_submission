@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
   import { simStore } from './lib/store';
   import { fetchInit } from './lib/api';
   import ControlPanel from './lib/ControlPanel.svelte';
@@ -9,6 +10,17 @@
   import AgentInspector from './lib/AgentInspector.svelte';
 
   let connectionStatus: 'connecting' | 'connected' | 'error' = 'connecting';
+  let healthPoll: number | null = null;
+
+  async function checkHealth() {
+    try {
+      const res = await fetch('/api/health', { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
+      if (connectionStatus !== 'connected') connectionStatus = 'connected';
+    } catch {
+      connectionStatus = 'error';
+    }
+  }
 
   onMount(async () => {
     simStore.setLoading(true);
@@ -24,6 +36,14 @@
       );
       connectionStatus = 'error';
     }
+
+    // Keep header status updated if backend goes down (or comes back).
+    await checkHealth();
+    healthPoll = window.setInterval(checkHealth, 3000);
+  });
+
+  onDestroy(() => {
+    if (healthPoll !== null) window.clearInterval(healthPoll);
   });
 </script>
 
