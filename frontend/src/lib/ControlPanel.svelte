@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { simStore } from './store';
-  import { createStreamUrl } from './api';
+  import { createStreamUrl, fetchInit } from './api';
 
   let eventSource: EventSource | null = null;
 
@@ -8,11 +9,15 @@
   let alpha = $simStore.params.alpha;
   let beta = $simStore.params.beta;
   let epsilon = $simStore.params.epsilon;
+  let steps = $simStore.params.steps;
+  let agentQuantity = $simStore.agentQuantity || 500;
 
   // Sync with store
   $: alpha = $simStore.params.alpha;
   $: beta = $simStore.params.beta;
   $: epsilon = $simStore.params.epsilon;
+  $: steps = $simStore.params.steps;
+  $: agentQuantity = $simStore.agentQuantity || 500;
 
   function updateParam(param: 'alpha' | 'beta' | 'epsilon', value: number) {
     // Ensure alpha + beta <= 1
@@ -72,6 +77,31 @@
   function applyPreset(preset: 'chronological' | 'engagement' | 'diversity') {
     simStore.applyPreset(preset);
   }
+
+  function updateSteps(value: number) {
+    const clamped = Math.max(1, Math.min(1000, Math.round(value)));
+    simStore.setParams({ steps: clamped });
+  }
+
+  async function applyAgentQuantity() {
+    const clamped = Math.max(1, Math.min(500, Math.round(agentQuantity)));
+    if (clamped === $simStore.agentQuantity) return;
+
+    stopSimulation();
+    simStore.setLoading(true);
+    simStore.setError(null);
+    try {
+      const data = await fetchInit(clamped);
+      simStore.initialize(data);
+    } catch (err) {
+      console.error('Failed to refresh init data:', err);
+      simStore.setError('Failed to reload graph with requested agent count.');
+    }
+  }
+
+  onDestroy(() => {
+    stopSimulation();
+  });
 
   // Derived values for display
   $: baselineWeight = Math.max(0, 1 - $simStore.params.alpha - $simStore.params.beta).toFixed(2);
@@ -214,10 +244,64 @@
         </p>
       </div>
 
+      <!-- Steps -->
+      <div class="parameter">
+        <div class="parameter-header">
+          <label class="parameter-label" for="steps">Simulation Steps</label>
+          <span class="parameter-value">{$simStore.params.steps}</span>
+        </div>
+        <input
+          type="range"
+          id="steps"
+          min="10"
+          max="1000"
+          step="10"
+          bind:value={steps}
+          on:input={() => updateSteps(steps)}
+          disabled={$simStore.isPlaying}
+        />
+        <p class="parameter-description">
+          Number of timesteps emitted by the backend stream for each run.
+        </p>
+      </div>
+
+      <!-- Agent Quantity -->
+      <div class="parameter">
+        <div class="parameter-header">
+          <label class="parameter-label" for="agentQuantity">Agent Count</label>
+          <span class="parameter-value">{$simStore.agentQuantity}</span>
+        </div>
+        <div class="transport-controls">
+          <input
+            id="agentQuantity"
+            class="parameter-input"
+            type="number"
+            min="1"
+            max="500"
+            step="1"
+            bind:value={agentQuantity}
+            disabled={$simStore.isPlaying}
+          />
+          <button
+            class="btn btn-secondary"
+            on:click={applyAgentQuantity}
+            disabled={$simStore.isPlaying}
+            title="Rebuild graph with selected agent count"
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+
       <!-- Baseline display -->
       <div class="metric-card" style="margin-top: 8px;">
         <span class="metric-label">Baseline / Chronological Weight</span>
         <span class="metric-value">{baselineWeight}</span>
+        <p class="parameter-description" style="margin-top: 8px;">
+          This is the remaining feed weight after α and β:
+          <code>baseline = 1 - alpha - beta</code>.
+          Higher baseline means a more neutral/chronological feed rather than preference-driven ranking.
+        </p>
       </div>
     </div>
   </section>

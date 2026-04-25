@@ -91,7 +91,9 @@
           <span>Loading simulation data...</span>
         </div>
       {:else}
-        <NetworkGraph />
+        {#key $simStore.initVersion}
+          <NetworkGraph />
+        {/key}
       {/if}
     </div>
 

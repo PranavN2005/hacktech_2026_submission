@@ -138,12 +138,27 @@
         ? $simStore.metricsHistory[$simStore.metricsHistory.length - 1].polarization 
         : $simStore.metricsHistory[$simStore.metricsHistory.length - 1].echo)
     : 0;
+
+  $: metricHelpText =
+    metric === 'polarization'
+      ? 'Esteban-Ray polarization: higher values mean belief clusters are further apart and more uneven in size.'
+      : 'Echo chamber coefficient = 1 - (mean feed belief distance / mean population belief distance). Higher means more like-minded feeds.';
 </script>
 
 <div class="chart-container">
   <div class="chart-header">
     <span class="chart-title">{title}</span>
-    <span class="chart-value">{currentValue.toFixed(3)}</span>
+    <div class="chart-value-group">
+      <span class="chart-value">{currentValue.toFixed(3)}</span>
+      <button
+        type="button"
+        class="info-tooltip"
+        aria-label="Metric explanation"
+      >
+        i
+        <span class="tooltip-content">{metricHelpText}</span>
+      </button>
+    </div>
   </div>
   <div bind:this={container} class="chart-wrapper"></div>
 </div>

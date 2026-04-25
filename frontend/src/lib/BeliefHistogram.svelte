@@ -119,7 +119,19 @@
 <div class="chart-container">
   <div class="chart-header">
     <span class="chart-title">Belief Distribution</span>
-    <span class="chart-value" title="Bimodality indicator">{bimodality.toFixed(2)}</span>
+    <div class="chart-value-group">
+      <span class="chart-value">{bimodality.toFixed(2)}</span>
+      <button
+        type="button"
+        class="info-tooltip"
+        aria-label="Metric explanation"
+      >
+        i
+        <span class="tooltip-content">
+          Bimodality indicator = max(0, edge belief share - center share). Higher values mean beliefs split into two opposing camps.
+        </span>
+      </button>
+    </div>
   </div>
   <div bind:this={container} class="chart-wrapper"></div>
 </div>

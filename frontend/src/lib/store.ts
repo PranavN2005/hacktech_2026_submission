@@ -35,8 +35,10 @@ export interface SimulationState {
   isPlaying: boolean;
   isLoading: boolean;
   error: string | null;
+  initVersion: number;
   currentStep: number;
   totalSteps: number;
+  agentQuantity: number;
   agents: Agent[];
   edges: GraphEdge[];
   beliefs: number[];
@@ -60,8 +62,10 @@ const initialState: SimulationState = {
   isPlaying: false,
   isLoading: false,
   error: null,
+  initVersion: 0,
   currentStep: 0,
   totalSteps: 100,
+  agentQuantity: 500,
   agents: [],
   edges: [],
   beliefs: [],
@@ -84,17 +88,25 @@ function createSimStore() {
       edges: GraphEdge[];
       defaults: SimParams;
     }) => {
-      update(state => ({
-        ...state,
-        isInitialized: true,
-        isLoading: false,
-        error: null,
-        agents: data.nodes,
-        edges: data.edges,
-        beliefs: data.nodes.map(n => n.initial_belief),
-        totalSteps: data.defaults.steps,
-        params: { ...data.defaults }
-      }));
+      update(state => {
+        const mergedParams = {
+          ...data.defaults,
+          ...state.params,
+        };
+        return {
+          ...state,
+          isInitialized: true,
+          isLoading: false,
+          error: null,
+          initVersion: state.initVersion + 1,
+          agents: data.nodes,
+          edges: data.edges,
+          beliefs: data.nodes.map(n => n.initial_belief),
+          agentQuantity: data.agent_count,
+          totalSteps: mergedParams.steps,
+          params: mergedParams,
+        };
+      });
     },
 
     // Set loading state
@@ -111,7 +123,11 @@ function createSimStore() {
     setParams: (params: Partial<SimParams>) => {
       update(state => ({
         ...state,
-        params: { ...state.params, ...params }
+        params: { ...state.params, ...params },
+        totalSteps:
+          typeof params.steps === 'number' && !state.isPlaying
+            ? params.steps
+            : state.totalSteps,
       }));
     },
 
@@ -121,6 +137,7 @@ function createSimStore() {
         ...state,
         isPlaying: true,
         currentStep: 0,
+        totalSteps: state.params.steps,
         metricsHistory: []
       }));
     },

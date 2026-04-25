@@ -17,8 +17,11 @@ export interface InitPayload {
 
 const API_BASE = '/api';
 
-export async function fetchInit(): Promise<InitPayload> {
-  const response = await fetch(`${API_BASE}/init`);
+export async function fetchInit(agentQuantity?: number): Promise<InitPayload> {
+  const query = typeof agentQuantity === 'number'
+    ? `?${new URLSearchParams({ agent_quantity: String(agentQuantity) }).toString()}`
+    : '';
+  const response = await fetch(`${API_BASE}/init${query}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch /init (${response.status} ${response.statusText})`);
   }
