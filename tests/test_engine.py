@@ -10,6 +10,24 @@ from backend.main import app
 import backend.main as main_module
 
 
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+_NODE_REQUIRED_KEYS = {
+    "id",
+    "name",
+    "bio",
+    "initial_belief",
+    "susceptibility",
+    "social_capital",
+}
+
+_DEFAULTS_REQUIRED_KEYS = {"alpha", "beta", "epsilon", "steps", "interval"}
+
+_STREAM_REQUIRED_KEYS = {"step", "beliefs", "polarization", "echo_coefficient"}
+
+
 def write_agents(tmp_path: Path, n: int = 8) -> Path:
     agents = [
         {
@@ -26,22 +44,41 @@ def write_agents(tmp_path: Path, n: int = 8) -> Path:
     return path
 
 
-def test_step_keeps_beliefs_finite_and_bounded(tmp_path: Path) -> None:
-    agents_path = write_agents(tmp_path, n=20)
-    engine = SimulationEngine(agents_path, seed=7, min_out_degree=3)
-    state = engine.step(alpha=0.5, beta=0.2, epsilon=0.4)
+def parse_sse(text: str) -> list[dict]:
+    return [
+        json.loads(line[len("data: "):])
+        for line in text.splitlines()
+        if line.startswith("data: ")
+    ]
 
-    assert len(state.beliefs) == 20
+
+# ---------------------------------------------------------------------------
+# Engine unit tests
+# ---------------------------------------------------------------------------
+
+def test_step_keeps_beliefs_finite(tmp_path: Path) -> None:
+    engine = SimulationEngine(write_agents(tmp_path, n=20), seed=7, min_out_degree=3)
+    state = engine.step(alpha=0.5, beta=0.2, epsilon=0.4)
     assert np.isfinite(state.beliefs).all()
+
+
+def test_step_keeps_beliefs_bounded(tmp_path: Path) -> None:
+    engine = SimulationEngine(write_agents(tmp_path, n=20), seed=7, min_out_degree=3)
+    state = engine.step(alpha=0.5, beta=0.2, epsilon=0.4)
     assert np.all(state.beliefs >= -1.0)
     assert np.all(state.beliefs <= 1.0)
+
+
+def test_step_output_length_matches_agent_count(tmp_path: Path) -> None:
+    engine = SimulationEngine(write_agents(tmp_path, n=20), seed=7, min_out_degree=3)
+    state = engine.step(alpha=0.5, beta=0.2, epsilon=0.4)
+    assert len(state.beliefs) == 20
 
 
 def test_fixed_seed_is_deterministic(tmp_path: Path) -> None:
     agents_path = write_agents(tmp_path, n=20)
     eng_a = SimulationEngine(agents_path, seed=99, min_out_degree=3)
     eng_b = SimulationEngine(agents_path, seed=99, min_out_degree=3)
-
     for _ in range(5):
         state_a = eng_a.step(alpha=0.6, beta=0.1, epsilon=0.5)
         state_b = eng_b.step(alpha=0.6, beta=0.1, epsilon=0.5)
@@ -50,74 +87,114 @@ def test_fixed_seed_is_deterministic(tmp_path: Path) -> None:
         assert state_a.echo_coefficient == state_b.echo_coefficient
 
 
-def test_init_and_stream_contracts() -> None:
-    client = TestClient(app)
-
-    init_resp = client.get("/init")
-    assert init_resp.status_code == 200
-    init_payload = init_resp.json()
-    assert {"agent_count", "nodes", "edges", "defaults"} <= init_payload.keys()
-    assert init_payload["agent_count"] == len(init_payload["nodes"])
-
-    stream_resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=2&interval=0")
-    assert stream_resp.status_code == 200
-    assert "text/event-stream" in stream_resp.headers["content-type"]
-
-    data_lines = [line for line in stream_resp.text.splitlines() if line.startswith("data: ")]
-    assert len(data_lines) == 2
-
-    payload = json.loads(data_lines[0].replace("data: ", "", 1))
-    assert {"step", "beliefs", "polarization", "echo_coefficient"} <= payload.keys()
-    assert len(payload["beliefs"]) == init_payload["agent_count"]
-
-
-def test_stream_rejects_invalid_alpha_beta_sum() -> None:
-    client = TestClient(app)
-    response = client.get("/stream?alpha=0.9&beta=0.3&epsilon=0.4")
-    assert response.status_code == 422
-    assert "alpha + beta must be ≤ 1.0" in response.json()["detail"]
-
-
 def test_engine_rejects_missing_file(tmp_path: Path) -> None:
-    missing = tmp_path / "missing.json"
     with pytest.raises(FileNotFoundError):
-        SimulationEngine(missing)
-
-def test_init_endpoint_node_contract() -> None:
-    client = TestClient(app)
-    data = client.get("/init").json()
-    required = {
-        "id",
-        "name",
-        "bio",
-        "initial_belief",
-        "susceptibility",
-        "social_capital",
-    }
-    assert {"agent_count", "nodes", "edges", "defaults"} <= data.keys()
-    assert data["agent_count"] == main_module.engine.N
-    assert len(data["nodes"]) == data["agent_count"]
-    for i, node in enumerate(data["nodes"]):
-        assert required <= node.keys()
-        assert node["id"] == i
+        SimulationEngine(tmp_path / "missing.json")
 
 
-def test_agent_quantity_bounds_and_stream_alignment() -> None:
-    client = TestClient(app)
-    init = client.get("/init?agent_quantity=37")
-    assert init.status_code == 200
-    init_data = init.json()
-    assert init_data["agent_count"] == 37
-    assert len(init_data["nodes"]) == 37
+# ---------------------------------------------------------------------------
+# /init — response contract
+# ---------------------------------------------------------------------------
 
-    stream = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
-    events = [
-        json.loads(line[len("data: "):])
-        for line in stream.text.splitlines()
-        if line.startswith("data: ")
-    ]
-    assert len(events) == 1
-    assert len(events[0]["beliefs"]) == 37
+class TestInit:
+    def test_status_200(self) -> None:
+        assert TestClient(app).get("/init").status_code == 200
 
-    assert client.get("/init?agent_quantity=0").status_code == 422
-    assert client.get("/init?agent_quantity=501").status_code == 422
+    def test_top_level_keys(self) -> None:
+        data = TestClient(app).get("/init").json()
+        assert {"agent_count", "nodes", "edges", "defaults"} <= data.keys()
+
+    def test_agent_count_matches_engine(self) -> None:
+        data = TestClient(app).get("/init").json()
+        assert data["agent_count"] == main_module.engine.N
+
+    def test_nodes_length_matches_agent_count(self) -> None:
+        data = TestClient(app).get("/init").json()
+        assert len(data["nodes"]) == data["agent_count"]
+
+    def test_node_schema(self) -> None:
+        data = TestClient(app).get("/init").json()
+        for node in data["nodes"]:
+            assert _NODE_REQUIRED_KEYS <= node.keys(), f"node {node.get('id')} missing keys"
+
+    def test_node_id_is_index_aligned(self) -> None:
+        """nodes[i]['id'] must equal i so belief arrays can be index-matched."""
+        data = TestClient(app).get("/init").json()
+        for i, node in enumerate(data["nodes"]):
+            assert node["id"] == i
+
+    def test_edges_have_from_and_to(self) -> None:
+        data = TestClient(app).get("/init").json()
+        assert len(data["edges"]) > 0
+        assert "from" in data["edges"][0] and "to" in data["edges"][0]
+
+    def test_defaults_keys(self) -> None:
+        data = TestClient(app).get("/init").json()
+        assert _DEFAULTS_REQUIRED_KEYS <= data["defaults"].keys()
+
+
+# ---------------------------------------------------------------------------
+# /init — agent_quantity parameter
+# ---------------------------------------------------------------------------
+
+class TestAgentQuantity:
+    def test_custom_quantity_returns_correct_count(self) -> None:
+        data = TestClient(app).get("/init?agent_quantity=50").json()
+        assert data["agent_count"] == 50
+        assert len(data["nodes"]) == 50
+
+    def test_custom_quantity_nodes_are_index_aligned(self) -> None:
+        data = TestClient(app).get("/init?agent_quantity=50").json()
+        for i, node in enumerate(data["nodes"]):
+            assert node["id"] == i
+
+    def test_stream_belief_count_matches_init_quantity(self) -> None:
+        client = TestClient(app)
+        init_data = client.get("/init?agent_quantity=37").json()
+        events = parse_sse(
+            client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0").text
+        )
+        assert len(events[0]["beliefs"]) == init_data["agent_count"] == 37
+
+    @pytest.mark.parametrize("bad", [0, 501])
+    def test_out_of_bounds_quantity_rejected(self, bad: int) -> None:
+        assert TestClient(app).get(f"/init?agent_quantity={bad}").status_code == 422
+
+
+# ---------------------------------------------------------------------------
+# /stream — response contract + validation
+# ---------------------------------------------------------------------------
+
+class TestStream:
+    def test_status_200(self) -> None:
+        resp = TestClient(app).get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
+        assert resp.status_code == 200
+
+    def test_content_type_is_event_stream(self) -> None:
+        resp = TestClient(app).get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
+        assert "text/event-stream" in resp.headers["content-type"]
+
+    def test_correct_number_of_events_emitted(self) -> None:
+        resp = TestClient(app).get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=3&interval=0")
+        assert len(parse_sse(resp.text)) == 3
+
+    def test_event_payload_keys(self) -> None:
+        resp = TestClient(app).get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
+        payload = parse_sse(resp.text)[0]
+        assert _STREAM_REQUIRED_KEYS <= payload.keys()
+
+    def test_belief_count_matches_agent_count(self) -> None:
+        client = TestClient(app)
+        n = client.get("/init").json()["agent_count"]
+        payload = parse_sse(
+            client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0").text
+        )[0]
+        assert len(payload["beliefs"]) == n
+
+    def test_alpha_plus_beta_gt_1_rejected(self) -> None:
+        resp = TestClient(app).get("/stream?alpha=0.8&beta=0.5&epsilon=0.4&steps=1&interval=0")
+        assert resp.status_code == 422
+
+    def test_alpha_plus_beta_gt_1_error_message(self) -> None:
+        resp = TestClient(app).get("/stream?alpha=0.9&beta=0.3&epsilon=0.4")
+        assert "alpha + beta must be ≤ 1.0" in resp.json()["detail"]
