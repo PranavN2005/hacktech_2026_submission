@@ -9,6 +9,8 @@
   let edgesDataset: DataSet<any> | null = null;
   let isStabilized = false;
   let isInitializing = false;
+  let lastRenderedStep = 0;
+  const RENDER_INTERVAL = 2; // Update visuals every 2-3 steps
 
   // Convert belief (-1 to 1) to color - matches histogram gradient
   function beliefToColor(belief: number): string {
@@ -61,32 +63,21 @@
       };
     });
 
-    // Create directed edges with visible arrows and subtle gradient coloring
+    // Create directed edges - no smoothing or arrows for performance
     const visEdges = edges.map((edge, i) => ({
       id: i,
       from: edge.from,
       to: edge.to,
-      arrows: {
-        to: {
-          enabled: true,
-          scaleFactor: 0.4,
-          type: 'arrow'
-        }
-      },
+      arrows: { to: { enabled: false } },
       color: {
-        color: 'rgba(147, 157, 177, 0.25)',
+        color: 'rgba(147, 157, 177, 0.2)',
         highlight: '#60a5fa',
-        hover: '#60a5fa',
-        opacity: 0.6
+        hover: '#60a5fa'
       },
-      width: 0.8,
-      smooth: {
-        enabled: true,
-        type: 'continuous',
-        roundness: 0.5
-      },
-      hoverWidth: 1.5,
-      selectionWidth: 2
+      width: 0.5,
+      smooth: false,
+      hoverWidth: 1.2,
+      selectionWidth: 1.5
     }));
 
     nodesDataset = new DataSet(nodes);
@@ -107,13 +98,9 @@
         }
       },
       edges: {
-        smooth: {
-          enabled: true,
-          type: 'continuous',
-          roundness: 0.5
-        },
-        selectionWidth: 2,
-        hoverWidth: 1.5
+        smooth: false,
+        selectionWidth: 1.5,
+        hoverWidth: 1.2
       },
       physics: {
         enabled: true,
@@ -172,36 +159,8 @@
       simStore.selectAgent(null);
     });
 
-    // Re-enable physics when dragging for bouncy interaction
-    network.on('dragStart', () => {
-      if (isStabilized && network) {
-        network.setOptions({
-          physics: {
-            enabled: true,
-            solver: 'barnesHut',
-            barnesHut: {
-              gravitationalConstant: -1500,
-              centralGravity: 0.2,
-              springLength: 100,
-              springConstant: 0.08,
-              damping: 0.3,
-              avoidOverlap: 0.2
-            },
-            maxVelocity: 50,
-            minVelocity: 0.5
-          }
-        });
-      }
-    });
-
-    // Disable physics after drag ends (with delay for bounce effect)
-    network.on('dragEnd', () => {
-      if (isStabilized && network) {
-        setTimeout(() => {
-          network?.setOptions({ physics: { enabled: false } });
-        }, 800);
-      }
-    });
+    // No physics re-enable on drag - user maintains direct control
+    // Nodes move only where dragged, no global physics simulation
 
     // Handle stabilization complete
     network.once('stabilizationIterationsDone', () => {
@@ -240,13 +199,18 @@
     initializeNetwork($simStore.agents, $simStore.edges, $simStore.beliefs);
   }
 
-  // Watch for belief updates during simulation
+  // Watch for belief updates during simulation - throttled to every RENDER_INTERVAL steps
   $: if (network && isStabilized && $simStore.beliefs.length > 0 && $simStore.currentStep > 0) {
-    updateBeliefs($simStore.beliefs, $simStore.agents);
+    const stepDiff = $simStore.currentStep - lastRenderedStep;
+    if (stepDiff >= RENDER_INTERVAL || $simStore.currentStep === $simStore.totalSteps) {
+      updateBeliefs($simStore.beliefs, $simStore.agents);
+      lastRenderedStep = $simStore.currentStep;
+    }
   }
 
   // Reset network colors when simulation resets
   $: if ($simStore.currentStep === 0 && $simStore.beliefs.length > 0 && network && isStabilized) {
+    lastRenderedStep = 0;
     updateBeliefs($simStore.beliefs, $simStore.agents);
   }
 

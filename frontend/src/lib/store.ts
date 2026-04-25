@@ -51,7 +51,7 @@ const defaultParams: SimParams = {
   beta: 0.2,
   epsilon: 0.4,
   steps: 100,
-  interval: 0.1
+  interval: 0.3 // 0.2-0.5 range, using 0.3 as balanced default
 };
 
 // Initial state
