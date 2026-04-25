@@ -8,20 +8,18 @@
   let nodesDataset: DataSet<any> | null = null;
   let edgesDataset: DataSet<any> | null = null;
   let isStabilized = false;
+  let isInitializing = false;
 
   // Convert belief (-1 to 1) to color - matches histogram gradient
   function beliefToColor(belief: number): string {
     // Blue (-1) -> Purple (0) -> Red (+1)
-    // Using same colors as histogram: #3b82f6 -> #a855f7 -> #ef4444
     if (belief <= 0) {
-      // Blue (#3b82f6) to Purple (#a855f7)
       const t = (belief + 1); // 0 to 1 as belief goes from -1 to 0
       const r = Math.round(59 + (168 - 59) * t);
       const g = Math.round(130 + (85 - 130) * t);
       const b = Math.round(246 + (247 - 246) * t);
       return `rgb(${r}, ${g}, ${b})`;
     } else {
-      // Purple (#a855f7) to Red (#ef4444)
       const t = belief; // 0 to 1 as belief goes from 0 to 1
       const r = Math.round(168 + (239 - 168) * t);
       const g = Math.round(85 + (68 - 85) * t);
@@ -30,92 +28,87 @@
     }
   }
 
-  // Node size based on social capital
   function getNodeSize(socialCapital: number, maxCapital: number): number {
-    const minSize = 6;
-    const maxSize = 18;
+    const minSize = 8;
+    const maxSize = 20;
     const normalized = Math.sqrt(socialCapital / Math.max(maxCapital, 1));
     return minSize + (maxSize - minSize) * normalized;
   }
 
   function initializeNetwork(agents: Agent[], edges: GraphEdge[], beliefs: number[]) {
-    if (!container || agents.length === 0) return;
+    if (!container || agents.length === 0 || isInitializing) return;
     if (network) return; // Already initialized
-
+    
+    isInitializing = true;
     console.log('[v0] Initializing network with', agents.length, 'agents and', edges.length, 'edges');
 
     const maxCapital = Math.max(...agents.map(a => a.social_capital || 100));
 
-    // Create nodes
+    // Create nodes with belief-based colors
     const nodes = agents.map((agent, i) => {
       const belief = beliefs[i] ?? agent.initial_belief;
       return {
         id: agent.id,
-        label: '',
-        title: `${agent.name}\nBelief: ${belief.toFixed(3)}`,
-        color: beliefToColor(belief),
+        color: {
+          background: beliefToColor(belief),
+          border: 'rgba(255,255,255,0.3)',
+          highlight: { background: beliefToColor(belief), border: '#ffffff' },
+          hover: { background: beliefToColor(belief), border: '#ffffff' }
+        },
         size: getNodeSize(agent.social_capital || 100, maxCapital),
-        borderWidth: 1,
-        borderWidthSelected: 2
+        title: `${agent.name}\nBelief: ${belief.toFixed(3)}`
       };
     });
 
-    // Sample edges for performance - show max 2000 edges
-    const maxEdges = 2000;
-    const sampleRate = edges.length > maxEdges ? Math.ceil(edges.length / maxEdges) : 1;
-    const sampledEdges = edges.filter((_, i) => i % sampleRate === 0);
-
-    console.log('[v0] Using', sampledEdges.length, 'sampled edges');
-
-    const visEdges = sampledEdges.map((edge, i) => ({
+    // Create directed edges
+    const visEdges = edges.map((edge, i) => ({
       id: i,
       from: edge.from,
       to: edge.to,
-      arrows: { to: { enabled: true, scaleFactor: 0.4 } },
-      color: { 
-        color: 'rgba(100, 116, 139, 0.2)', 
-        highlight: 'rgba(59, 130, 246, 0.6)' 
-      },
+      arrows: { to: { enabled: true, scaleFactor: 0.3 } },
+      color: { color: 'rgba(100, 116, 139, 0.15)', highlight: '#3b82f6' },
       width: 0.5,
       smooth: false
     }));
 
+    console.log('[v0] Creating DataSets...');
     nodesDataset = new DataSet(nodes);
     edgesDataset = new DataSet(visEdges);
 
     const options = {
       nodes: {
         shape: 'dot',
-        font: { color: '#ffffff', size: 10 },
-        shadow: false,
-        borderColor: 'rgba(255,255,255,0.3)'
+        borderWidth: 1,
+        borderWidthSelected: 2,
+        font: { size: 0 } // No labels for performance
       },
       edges: {
         smooth: false,
-        selectionWidth: 1.5
+        selectionWidth: 1
       },
       physics: {
         enabled: true,
-        solver: 'forceAtlas2Based',
-        forceAtlas2Based: {
-          gravitationalConstant: -30,
-          centralGravity: 0.01,
-          springLength: 50,
-          springConstant: 0.08,
-          damping: 0.4,
-          avoidOverlap: 0.5
+        solver: 'barnesHut',
+        barnesHut: {
+          gravitationalConstant: -2000,
+          centralGravity: 0.3,
+          springLength: 80,
+          springConstant: 0.04,
+          damping: 0.09,
+          avoidOverlap: 0.1
         },
         stabilization: {
           enabled: true,
-          iterations: 100,
-          updateInterval: 50
+          iterations: 150,
+          updateInterval: 25,
+          fit: true
         },
         maxVelocity: 50,
-        minVelocity: 0.1
+        minVelocity: 0.75
       },
       interaction: {
         hover: true,
-        tooltipDelay: 50,
+        tooltipDelay: 100,
         hideEdgesOnDrag: true,
         hideEdgesOnZoom: true,
         dragNodes: true,
@@ -128,6 +121,7 @@
       }
     };
 
+    console.log('[v0] Creating Network...');
     network = new Network(container, { nodes: nodesDataset, edges: edgesDataset }, options);
 
     // Handle node selection
@@ -143,19 +137,12 @@
       simStore.selectAgent(null);
     });
 
-    // Disable physics after stabilization for better performance
+    // Disable physics after stabilization
     network.once('stabilizationIterationsDone', () => {
-      console.log('[v0] Network stabilized');
+      console.log('[v0] Network stabilized, disabling physics');
       isStabilized = true;
+      isInitializing = false;
       network?.setOptions({ physics: { enabled: false } });
-    });
-
-    // Also handle stabilization progress
-    network.on('stabilizationProgress', (params) => {
-      const progress = Math.round((params.iterations / params.total) * 100);
-      if (progress % 25 === 0) {
-        console.log('[v0] Stabilization:', progress + '%');
-      }
     });
   }
 
@@ -164,7 +151,12 @@
 
     const updates = agents.map((agent, i) => ({
       id: agent.id,
-      color: beliefToColor(beliefs[i]),
+      color: {
+        background: beliefToColor(beliefs[i]),
+        border: 'rgba(255,255,255,0.3)',
+        highlight: { background: beliefToColor(beliefs[i]), border: '#ffffff' },
+        hover: { background: beliefToColor(beliefs[i]), border: '#ffffff' }
+      },
       title: `${agent.name}\nBelief: ${beliefs[i].toFixed(3)}`
     }));
 
@@ -177,7 +169,7 @@
   }
 
   // Watch for belief updates during simulation
-  $: if (network && $simStore.beliefs.length > 0 && $simStore.currentStep > 0) {
+  $: if (network && isStabilized && $simStore.beliefs.length > 0 && $simStore.currentStep > 0) {
     updateBeliefs($simStore.beliefs, $simStore.agents);
   }
 
@@ -219,7 +211,12 @@
   {#if !$simStore.isInitialized}
     <div class="loading-overlay">
       <div class="loading-spinner"></div>
-      <span>Initializing network...</span>
+      <span>Waiting for simulation data...</span>
+    </div>
+  {:else if !isStabilized && !network}
+    <div class="loading-overlay">
+      <div class="loading-spinner"></div>
+      <span>Building network graph...</span>
     </div>
   {/if}
 </div>
@@ -251,7 +248,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: rgba(15, 17, 23, 0.85);
+    background: rgba(15, 17, 23, 0.9);
     padding: 10px 12px;
     border-radius: 6px;
     border: 1px solid var(--border-color);
@@ -283,5 +280,18 @@
     background: var(--bg-primary);
     color: var(--text-secondary);
     font-size: 14px;
+  }
+
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 </style>
