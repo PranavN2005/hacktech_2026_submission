@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from pathlib import Path
 
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,7 +12,12 @@ from backend.engine import SimulationEngine
 
 
 app = FastAPI(title="EchoChamber Backend", version="0.1.0")
-engine = SimulationEngine(n=500, m=3, seed=42)
+agents_path = Path("agents.json")
+engine = (
+    SimulationEngine(m=3, seed=42, agents_path=str(agents_path))
+    if agents_path.exists()
+    else SimulationEngine(n=500, m=3, seed=42)
+)
 
 # Allow local frontend dev servers to call this API during development.
 app.add_middleware(
