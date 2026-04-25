@@ -25,7 +25,13 @@ _NODE_REQUIRED_KEYS = {
 
 _DEFAULTS_REQUIRED_KEYS = {"alpha", "beta", "epsilon", "steps", "interval"}
 
-_STREAM_REQUIRED_KEYS = {"step", "beliefs", "polarization", "echo_coefficient"}
+_STREAM_REQUIRED_KEYS = {
+    "step",
+    "beliefs",
+    "polarization",
+    "polarization_normalized",
+    "echo_coefficient",
+}
 
 
 def write_agents(tmp_path: Path, n: int = 8) -> Path:

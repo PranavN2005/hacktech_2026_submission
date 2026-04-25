@@ -184,6 +184,30 @@ class TestDynamicsHelpers:
 # ---------------------------------------------------------------------------
 
 class TestEngineModes:
+    def test_normalized_esteban_ray_reaches_one_for_two_extreme_communities(
+        self, tmp_path: Path
+    ) -> None:
+        path = write_agents(tmp_path, n=4)
+        eng = SimulationEngine(path, seed=0, min_out_degree=1)
+        eng._louvain_communities = lambda: [{0, 1}, {2, 3}]  # noqa: SLF001
+
+        raw, normalized = eng._esteban_ray_values(  # noqa: SLF001
+            np.array([-1.0, -1.0, 1.0, 1.0])
+        )
+
+        assert raw > 0.0
+        assert normalized == pytest.approx(1.0)
+
+    def test_normalized_esteban_ray_is_zero_at_consensus(self, tmp_path: Path) -> None:
+        path = write_agents(tmp_path, n=4)
+        eng = SimulationEngine(path, seed=0, min_out_degree=1)
+        eng._louvain_communities = lambda: [{0, 1}, {2, 3}]  # noqa: SLF001
+
+        raw, normalized = eng._esteban_ray_values(np.zeros(4))  # noqa: SLF001
+
+        assert raw == pytest.approx(0.0)
+        assert normalized == pytest.approx(0.0)
+
     def test_step_with_config_runs_each_mode(self, tmp_path: Path) -> None:
         path = write_agents(tmp_path, n=12)
         for mt in ("degroot", "confirmation_bias", "bounded_confidence", "repulsive_bc"):
@@ -192,6 +216,8 @@ class TestEngineModes:
             state = eng.step_with_config(cfg)
             assert np.isfinite(state.beliefs).all()
             assert np.all(state.beliefs >= -1.0) and np.all(state.beliefs <= 1.0)
+            assert state.polarization_normalized is not None
+            assert 0.0 <= state.polarization_normalized <= 1.0
             assert state.step == 1
 
     def test_clipping_keeps_beliefs_in_range_under_noise(self, tmp_path: Path) -> None:

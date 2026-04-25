@@ -35,19 +35,8 @@
     layer: [
       {
         mark: {
-          type: 'area',
-          line: { color: '#3b82f6', strokeWidth: 2 },
-          color: {
-            x1: 1,
-            y1: 1,
-            x2: 1,
-            y2: 0,
-            gradient: 'linear',
-            stops: [
-              { offset: 0, color: 'rgba(59, 130, 246, 0)' },
-              { offset: 1, color: 'rgba(59, 130, 246, 0.3)' }
-            ]
-          },
+          type: 'line',
+          strokeWidth: 2,
           interpolate: 'monotone'
         },
         encoding: {
@@ -62,6 +51,25 @@
             type: 'quantitative',
             title: null,
             scale: { domain: [0, 1] }
+          },
+          color: {
+            field: 'series',
+            type: 'nominal',
+            legend: metric === 'polarization'
+              ? {
+                  orient: 'bottom',
+                  direction: 'horizontal',
+                  title: null,
+                  labelColor: '#9ca3af',
+                  labelFont: 'Inter, system-ui, sans-serif',
+                  labelFontSize: 10,
+                  symbolSize: 80
+                }
+              : null,
+            scale: {
+              domain: ['Normalized ER', 'Raw ER', 'Echo'],
+              range: ['#3b82f6', '#f59e0b', '#3b82f6']
+            }
           }
         }
       },
@@ -69,12 +77,20 @@
         mark: {
           type: 'point',
           filled: true,
-          color: '#3b82f6',
           size: 30
         },
         encoding: {
           x: { field: 'step', type: 'quantitative' },
           y: { field: 'value', type: 'quantitative' },
+          color: {
+            field: 'series',
+            type: 'nominal',
+            legend: null,
+            scale: {
+              domain: ['Normalized ER', 'Raw ER', 'Echo'],
+              range: ['#3b82f6', '#f59e0b', '#3b82f6']
+            }
+          },
           opacity: {
             condition: { test: 'datum.step === datum.maxStep', value: 1 },
             value: 0
@@ -100,11 +116,28 @@
   function updateChart(history: MetricPoint[]) {
     if (!vegaResult) return;
 
-    const data = history.map(h => ({
-      step: h.step,
-      value: metric === 'polarization' ? h.polarization : h.echo,
-      maxStep: history.length > 0 ? history[history.length - 1].step : 0
-    }));
+    const maxStep = history.length > 0 ? history[history.length - 1].step : 0;
+    const data = metric === 'polarization'
+      ? history.flatMap(h => [
+          {
+            step: h.step,
+            value: h.polarization_normalized,
+            series: 'Normalized ER',
+            maxStep,
+          },
+          {
+            step: h.step,
+            value: h.polarization,
+            series: 'Raw ER',
+            maxStep,
+          },
+        ])
+      : history.map(h => ({
+          step: h.step,
+          value: h.echo,
+          series: 'Echo',
+          maxStep,
+        }));
 
     vegaResult.view.change('metrics', 
       vegaResult.view.changeset()
@@ -133,15 +166,19 @@
   });
 
   // Current value
-  $: currentValue = $simStore.metricsHistory.length > 0 
+  $: currentPoint = $simStore.metricsHistory.length > 0
+    ? $simStore.metricsHistory[$simStore.metricsHistory.length - 1]
+    : null;
+
+  $: currentValue = currentPoint
     ? (metric === 'polarization' 
-        ? $simStore.metricsHistory[$simStore.metricsHistory.length - 1].polarization 
-        : $simStore.metricsHistory[$simStore.metricsHistory.length - 1].echo)
+        ? currentPoint.polarization_normalized
+        : currentPoint.echo)
     : 0;
 
   $: metricHelpText =
     metric === 'polarization'
-      ? 'Esteban-Ray polarization: higher values mean belief clusters are further apart and more uneven in size.'
+      ? 'Esteban-Ray polarization shown two ways: normalized ER (blue, 0-1 display scale) and raw ER (amber, literature formula). Normalized ER divides raw ER by the max possible value for the current graph-community sizes.'
       : 'Echo chamber coefficient = 1 - (mean feed belief distance / mean population belief distance). Higher means more like-minded feeds.';
 </script>
 
@@ -150,6 +187,9 @@
     <span class="chart-title">{title}</span>
     <div class="chart-value-group">
       <span class="chart-value">{currentValue.toFixed(3)}</span>
+      {#if metric === 'polarization' && currentPoint}
+        <span class="chart-subvalue">raw {currentPoint.polarization.toFixed(4)}</span>
+      {/if}
       <button
         type="button"
         class="info-tooltip"

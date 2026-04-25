@@ -523,10 +523,13 @@
 
     <div class="metrics-bar" style="flex-direction: column; gap: 8px;">
       <div class="metric-card">
-        <span class="metric-label">Polarization Index (Esteban-Ray)</span>
+        <span class="metric-label">Polarization Index (Normalized)</span>
         <span class="metric-value">
-          {$latestMetric ? $latestMetric.polarization.toFixed(4) : '0.0000'}
+          {$latestMetric ? $latestMetric.polarization_normalized.toFixed(4) : '0.0000'}
         </span>
+        <p class="parameter-description" style="margin-top: 4px;">
+          Raw ER: {$latestMetric ? $latestMetric.polarization.toFixed(4) : '0.0000'}
+        </p>
       </div>
       <div class="metric-card">
         <span class="metric-label">Echo Chamber Coefficient</span>

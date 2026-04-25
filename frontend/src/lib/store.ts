@@ -41,6 +41,7 @@ export interface DynamicsConfig {
 export interface MetricPoint {
   step: number;
   polarization: number;
+  polarization_normalized: number;
   echo: number;
   mean_pairwise_distance?: number;
   frac_no_compatible?: number;
@@ -195,6 +196,7 @@ function createSimStore() {
       step: number;
       beliefs: number[];
       polarization: number;
+      polarization_normalized?: number | null;
       echo_coefficient: number;
       mean_pairwise_distance?: number | null;
       frac_no_compatible?: number | null;
@@ -210,6 +212,7 @@ function createSimStore() {
           {
             step: payload.step,
             polarization: payload.polarization,
+            polarization_normalized: payload.polarization_normalized ?? 0,
             echo: payload.echo_coefficient,
             mean_pairwise_distance: payload.mean_pairwise_distance ?? undefined,
             frac_no_compatible: payload.frac_no_compatible ?? undefined,

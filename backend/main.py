@@ -160,6 +160,7 @@ async def stream(
             "step":                    int,
             "beliefs":                 float[N],
             "polarization":            float,
+            "polarization_normalized": float,
             "echo_coefficient":        float,
             // present when model_type != "degroot":
             "mean_pairwise_distance":  float | null,
@@ -204,6 +205,7 @@ async def stream(
                     "step": state.step,
                     "beliefs": state.beliefs.tolist(),
                     "polarization": state.polarization,
+                    "polarization_normalized": state.polarization_normalized,
                     "echo_coefficient": state.echo_coefficient,
                     "mean_pairwise_distance": None,
                     "frac_no_compatible": None,
@@ -216,6 +218,7 @@ async def stream(
                     "step": state.step,
                     "beliefs": state.beliefs.tolist(),
                     "polarization": state.polarization,
+                    "polarization_normalized": state.polarization_normalized,
                     "echo_coefficient": state.echo_coefficient,
                     "mean_pairwise_distance": state.mean_pairwise_distance,
                     "frac_no_compatible": state.frac_no_compatible,

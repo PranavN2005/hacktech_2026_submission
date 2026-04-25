@@ -50,6 +50,9 @@ class SimState:
     beliefs: np.ndarray      # shape (N,), values ∈ [-1, 1]
     polarization: float      # Esteban-Ray index ≥ 0
     echo_coefficient: float  # ∈ [0, 1]
+    # Raw ER is kept for continuity; this display-oriented value scales it by
+    # the max possible ER for the current Louvain community sizes.
+    polarization_normalized: float = 0.0
     # Optional auxiliary diagnostics populated by step_with_config().
     # Legacy step() leaves them None to preserve the existing payload shape.
     mean_pairwise_distance: Optional[float] = None
@@ -188,11 +191,12 @@ class SimulationEngine:
         self._B = np.clip(B + delta, -1.0, 1.0)
         self._current_step += 1
 
-        pol, echo = self._compute_metrics(F, belief_diff)
+        pol, pol_norm, echo = self._compute_metrics(F, belief_diff)
         return SimState(
             step=self._current_step,
             beliefs=self._B.copy(),
             polarization=pol,
+            polarization_normalized=pol_norm,
             echo_coefficient=echo,
         )
 
@@ -286,13 +290,14 @@ class SimulationEngine:
         # Echo / Esteban-Ray are computed exactly as before so the primary
         # metrics remain comparable across modes.
         new_dist = compute_distances(new_B)
-        pol, echo = self._compute_metrics(W_hat, new_dist)
+        pol, pol_norm, echo = self._compute_metrics(W_hat, new_dist)
         diagnostics = self._compute_diagnostics(W_hat, new_dist, M)
 
         return SimState(
             step=self._current_step,
             beliefs=self._B.copy(),
             polarization=pol,
+            polarization_normalized=pol_norm,
             echo_coefficient=echo,
             mean_pairwise_distance=diagnostics["mean_pairwise_distance"],
             frac_no_compatible=diagnostics["frac_no_compatible"],
@@ -460,20 +465,35 @@ class SimulationEngine:
 
     def _compute_metrics(
         self, F: np.ndarray, belief_diff: np.ndarray
-    ) -> tuple[float, float]:
-        return self._esteban_ray(self._B), self._echo_coefficient(F, belief_diff)
+    ) -> tuple[float, float, float]:
+        raw_er, normalized_er = self._esteban_ray_values(self._B)
+        return raw_er, normalized_er, self._echo_coefficient(F, belief_diff)
 
     def _esteban_ray(self, B: np.ndarray) -> float:
+        """Return the raw Esteban-Ray polarization index."""
+        return self._esteban_ray_values(B)[0]
+
+    def _esteban_ray_values(self, B: np.ndarray) -> tuple[float, float]:
         """
-        Esteban-Ray polarization index.
+        Raw and normalized Esteban-Ray polarization index.
+
         P = K · Σ_k Σ_m π_k^(1+ρ) · π_m · |C_k − C_m|
 
         Communities are detected on the follow graph topology via Louvain,
         then characterised by their mean belief.
+
+        The normalized value divides raw ER by the maximum possible ER under
+        the current community sizes and belief range [-1, 1]:
+
+            P_max = 2 · Σ_{k≠m} π_k^(1+ρ) · π_m
+
+        This preserves raw ER for scientific continuity while giving the UI a
+        stable 0-1 display scale. With two equally sized communities at
+        centroids -1 and 1, normalized ER is exactly 1.
         """
         communities = self._louvain_communities()
         if len(communities) < 2:
-            return 0.0
+            return 0.0, 0.0
 
         pop = float(self.N)
         pi = np.array([len(c) / pop for c in communities])
@@ -484,10 +504,19 @@ class SimulationEngine:
         pi_col = pi[None, :]   # (1, K)
         c_row = centroids[:, None]
         c_col = centroids[None, :]
-        total = float(
+        raw = float(
             ((pi_row ** (1.0 + _RHO)) * pi_col * np.abs(c_row - c_col)).sum()
         )
-        return _K_ER * total
+        raw *= _K_ER
+
+        off_diag = ~np.eye(len(communities), dtype=bool)
+        max_possible = float(
+            (2.0 * ((pi_row ** (1.0 + _RHO)) * pi_col)[off_diag]).sum()
+        )
+        if max_possible <= 0.0:
+            return raw, 0.0
+        normalized = float(np.clip(raw / max_possible, 0.0, 1.0))
+        return raw, normalized
 
     def _echo_coefficient(self, F: np.ndarray, belief_diff: np.ndarray) -> float:
         """
