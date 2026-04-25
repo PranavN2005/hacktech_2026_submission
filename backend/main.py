@@ -89,7 +89,10 @@ async def init(
     sc = engine.social_capital  # shape (N,), index-aligned with beliefs
     nodes = [
         {
-            "id": int(a["id"]),
+            # `id` is graph index-aligned with `/stream` beliefs[i].
+            "id": i,
+            # Preserve original persona id for inspector/debugging.
+            "persona_id": a["id"],
             "name": a["name"],
             "bio": a["bio"],
             "initial_belief": float(a["initial_belief"]),
