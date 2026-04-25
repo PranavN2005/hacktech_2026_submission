@@ -159,36 +159,7 @@
       simStore.selectAgent(null);
     });
 
-    // Re-enable physics on drag for bouncy interactive feel
-    network.on('dragStart', () => {
-      if (isStabilized && network) {
-        network.setOptions({
-          physics: {
-            enabled: true,
-            solver: 'barnesHut',
-            barnesHut: {
-              gravitationalConstant: -2000,
-              centralGravity: 0.3,
-              springLength: 120,
-              springConstant: 0.05,
-              damping: 0.4,
-              avoidOverlap: 0.2
-            },
-            maxVelocity: 50,
-            minVelocity: 0.5
-          }
-        });
-      }
-    });
-
-    // Disable physics shortly after drag ends so the graph settles
-    network.on('dragEnd', () => {
-      if (isStabilized && network) {
-        setTimeout(() => {
-          network?.setOptions({ physics: { enabled: false } });
-        }, 600);
-      }
-    });
+    // Physics stays off during drag - nodes move only where placed
 
     // Handle stabilization complete
     network.once('stabilizationIterationsDone', () => {
