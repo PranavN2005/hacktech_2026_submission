@@ -51,11 +51,31 @@ class SimulationEngine:
     def __init__(
         self,
         agents_path: str | Path,
+        agent_count: int | None = None,
         seed: Optional[int] = None,
         min_out_degree: int = 10,
     ):
         self._seed = seed
-        self._agents: list[dict] = _load_agents(Path(agents_path))
+        all_agents: list[dict] = _load_agents(Path(agents_path))
+        if agent_count is None:
+            agent_count = len(all_agents)
+        if not (1 <= agent_count <= len(all_agents)):
+            raise ValueError(
+                f"agent_count must be within [1, {len(all_agents)}], got {agent_count}"
+            )
+
+        if agent_count == len(all_agents):
+            sampled = [dict(a) for a in all_agents]
+        else:
+            rng = np.random.default_rng(seed)
+            chosen = rng.choice(len(all_agents), size=agent_count, replace=False)
+            sampled = [dict(all_agents[int(i)]) for i in chosen]
+
+        # Re-assign ids to keep the invariant nodes[i].id == i for the API.
+        for i, a in enumerate(sampled):
+            a["id"] = i
+
+        self._agents = sampled
         self.N: int = len(self._agents)
 
         # ── Build directed follow graph ──────────────────────────────────

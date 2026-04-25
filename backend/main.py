@@ -24,7 +24,16 @@ if not _AGENTS_PATH.exists():
         "Set the AGENTS_PATH env var or ensure agents_500_pro_max.json is present."
     )
 
-engine = SimulationEngine(_AGENTS_PATH, seed=42, min_out_degree=10)
+def _make_engine(agent_quantity: int) -> SimulationEngine:
+    return SimulationEngine(
+        _AGENTS_PATH,
+        agent_count=agent_quantity,
+        seed=42,
+        min_out_degree=10,
+    )
+
+
+engine = _make_engine(agent_quantity=500)
 
 app.add_middleware(
     CORSMiddleware,
@@ -60,13 +69,23 @@ _DEFAULTS = {
 
 
 @app.get("/init")
-async def init() -> dict:
+async def init(
+    agent_quantity: int = Query(
+        500,
+        ge=1,
+        le=500,
+        description="Number of agents to simulate (randomly sampled up to 500)",
+    )
+) -> dict:
     """
     Return agent metadata, follow-graph topology, and simulation defaults.
 
     Node ordering in `nodes` is identical to the belief-array index order
     emitted by `/stream`, so `nodes[i].id == i` always holds.
     """
+    global engine
+    engine = _make_engine(agent_quantity=agent_quantity)
+
     sc = engine.social_capital  # shape (N,), index-aligned with beliefs
     nodes = [
         {

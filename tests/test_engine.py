@@ -13,7 +13,8 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.main import app, engine as app_engine
+from backend.main import app
+import backend.main as main_module
 
 
 @pytest.fixture(scope="module")
@@ -36,7 +37,7 @@ class TestInit:
 
     def test_agent_count_matches_engine(self, client):
         data = client.get("/init").json()
-        assert data["agent_count"] == app_engine.N
+        assert data["agent_count"] == main_module.engine.N
 
     def test_nodes_length_matches_agent_count(self, client):
         data = client.get("/init").json()
@@ -120,4 +121,39 @@ class TestStream:
 
     def test_alpha_plus_beta_gt_1_rejected(self, client):
         resp = client.get("/stream?alpha=0.8&beta=0.5&epsilon=0.4&steps=1&interval=0")
+        assert resp.status_code == 422
+
+
+# ---------------------------------------------------------------------------
+# agent_quantity (configurable agent count)
+# ---------------------------------------------------------------------------
+
+
+class TestAgentQuantity:
+    def _parse_sse(self, text: str) -> list[dict]:
+        return [
+            json.loads(line[len("data: "):])
+            for line in text.splitlines()
+            if line.startswith("data: ")
+        ]
+
+    def test_init_allows_custom_agent_quantity(self, client):
+        resp = client.get("/init?agent_quantity=50")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["agent_count"] == 50
+        assert len(data["nodes"]) == 50
+        for i, node in enumerate(data["nodes"]):
+            assert node["id"] == i
+
+    def test_stream_uses_engine_created_by_init(self, client):
+        init = client.get("/init?agent_quantity=37").json()
+        resp = client.get("/stream?alpha=0.5&beta=0.2&epsilon=0.4&steps=1&interval=0")
+        events = self._parse_sse(resp.text)
+        assert len(events) == 1
+        assert len(events[0]["beliefs"]) == init["agent_count"] == 37
+
+    @pytest.mark.parametrize("bad", [0, 501])
+    def test_init_rejects_out_of_bounds_agent_quantity(self, client, bad):
+        resp = client.get(f"/init?agent_quantity={bad}")
         assert resp.status_code == 422
