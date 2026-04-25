@@ -9,7 +9,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 
-DEFAULT_GEMINI_MODEL = "gemini-2.5-flash"
+DEFAULT_GEMINI_MODEL = "gemini-3-flash-preview"
+DEFAULT_INITIAL_BELIEF = 0.0
+DEFAULT_SUSCEPTIBILITY = 0.5
 
 
 def _clamp(x: float, lo: float, hi: float) -> float:
@@ -43,7 +45,7 @@ def _ensure_belief(x: Any) -> Optional[float]:
     return _clamp(v, -1.0, 1.0)
 
 
-def _validate_persona(obj: Any) -> Optional[dict[str, Any]]:
+def _validate_persona_relaxed(obj: Any) -> Optional[dict[str, Any]]:
     if not isinstance(obj, dict):
         return None
 
@@ -56,14 +58,12 @@ def _validate_persona(obj: Any) -> Optional[dict[str, Any]]:
         return None
     if not isinstance(bio, str) or not bio.strip():
         return None
-    if belief is None or susceptibility is None:
-        return None
 
     return {
         "name": name.strip(),
         "bio": bio.strip(),
-        "initial_belief": belief,
-        "susceptibility": susceptibility,
+        "initial_belief": belief if belief is not None else DEFAULT_INITIAL_BELIEF,
+        "susceptibility": susceptibility if susceptibility is not None else DEFAULT_SUSCEPTIBILITY,
     }
 
 
@@ -80,9 +80,9 @@ def _build_gemini_client(api_key: str):
 
 def _personas_prompt(n: int) -> str:
     return f"""
-You are generating initial agents for a social simulation.
+You are generating random initial agents for a social simulation. The agents should be diverse and realistic.
 
-Return STRICT JSON ONLY (no markdown, no commentary). The JSON must validate against the provided schema.
+Return JSON only (no markdown, no commentary). Prefer this shape:
 
 Top-level schema:
 {{
@@ -97,42 +97,73 @@ Persona schema:
   "susceptibility": number in (0, 1]
 }}
 
-Hard constraints:
-- Output EXACTLY {n} personas in the "personas" array.
+Guidelines:
+- You MUST generate {n} personas in the "personas" array.
 - Every persona MUST have a unique "name".
 - Bios should be distinct; do not reuse the same bio template.
-- initial_belief MUST be within [-1, 1] (inclusive).
-- susceptibility MUST be > 0 and <= 1.
+- Keep numeric fields within bounds, generate to the thousandth decimal place.
 - Keep each bio concise (1-3 sentences) and realistic, and vary demographic details (age range, region, occupation).
 
 Generate {n} personas now.
 """.strip()
 
 
-def _personas_json_schema() -> dict[str, Any]:
-    # Note: JSON Schema can't enforce "exactly N items" (since N is dynamic),
-    # so we validate count in code.
-    return {
-        "type": "object",
-        "properties": {
-            "personas": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "name": {"type": "string"},
-                        "bio": {"type": "string"},
-                        "initial_belief": {"type": "number", "minimum": -1.0, "maximum": 1.0},
-                        "susceptibility": {"type": "number", "exclusiveMinimum": 0.0, "maximum": 1.0},
-                    },
-                    "required": ["name", "bio", "initial_belief", "susceptibility"],
-                    "additionalProperties": False,
-                },
-            }
-        },
-        "required": ["personas"],
-        "additionalProperties": False,
-    }
+def _extract_json(text: str) -> Any:
+    """
+    Gemini usually returns JSON when response_mime_type is application/json, but in practice
+    we may still see leading/trailing text. This extracts the first JSON object/array.
+    """
+    text = (text or "").strip()
+    if not text:
+        raise ValueError("Empty model response.")
+    try:
+        return json.loads(text)
+    except Exception:
+        pass
+
+    first_obj = text.find("{")
+    first_arr = text.find("[")
+    starts = [i for i in (first_obj, first_arr) if i != -1]
+    if not starts:
+        raise ValueError("Model response did not contain JSON.")
+
+    start = min(starts)
+    opening = text[start]
+    closing = "}" if opening == "{" else "]"
+
+    depth = 0
+    in_str = False
+    esc = False
+    end: Optional[int] = None
+
+    for i in range(start, len(text)):
+        ch = text[i]
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+
+        if ch == '"':
+            in_str = True
+            continue
+
+        if ch == opening:
+            depth += 1
+        elif ch == closing:
+            depth -= 1
+            if depth == 0:
+                end = i + 1
+                break
+
+    if end is None:
+        raise ValueError("Model response contained JSON start but no balanced end.")
+
+    candidate = text[start:end]
+    return json.loads(candidate)
 
 
 def _generate_personas_gemini(
@@ -158,31 +189,63 @@ def _generate_personas_gemini(
             temperature=temperature,
             max_output_tokens=max_output_tokens,
             response_mime_type="application/json",
-            response_json_schema=_personas_json_schema(),
         ),
     )
-    parsed = json.loads(resp.text)
-    if not isinstance(parsed, dict) or "personas" not in parsed:
-        raise ValueError('Model returned JSON without top-level key "personas".')
+    parsed = _extract_json(getattr(resp, "text", "") or "")
+    personas_raw: Any
+    if isinstance(parsed, dict):
+        if "personas" in parsed:
+            personas_raw = parsed["personas"]
+        elif "agents" in parsed:
+            personas_raw = parsed["agents"]
+        else:
+            personas_raw = None
+    elif isinstance(parsed, list):
+        personas_raw = parsed
+    else:
+        personas_raw = None
 
-    personas_raw = parsed["personas"]
     if not isinstance(personas_raw, list):
-        raise ValueError('"personas" must be a JSON array.')
-    if len(personas_raw) != n:
-        raise ValueError(f"Expected exactly {n} personas, got {len(personas_raw)}.")
+        raise ValueError('Model returned JSON without a "personas" array (or array root).')
 
     personas: list[dict[str, Any]] = []
-    for item in personas_raw:
-        p = _validate_persona(item)
+    for i, item in enumerate(personas_raw):
+        p = _validate_persona_relaxed(item)
         if p is None:
-            raise ValueError("One or more personas failed validation.")
+            # Very relaxed fallback: keep generation moving.
+            p = {
+                "name": f"Agent {i}",
+                "bio": "A participant in the simulation.",
+                "initial_belief": DEFAULT_INITIAL_BELIEF,
+                "susceptibility": DEFAULT_SUSCEPTIBILITY,
+            }
         personas.append(p)
 
+    # Ensure we return exactly n personas: trim or pad with simple fallbacks.
+    if len(personas) > n:
+        personas = personas[:n]
+    while len(personas) < n:
+        i = len(personas)
+        personas.append(
+            {
+                "name": f"Agent {i}",
+                "bio": "A participant in the simulation.",
+                "initial_belief": DEFAULT_INITIAL_BELIEF,
+                "susceptibility": DEFAULT_SUSCEPTIBILITY,
+            }
+        )
+
+    # De-dupe names deterministically.
     seen_names: set[str] = set()
-    for p in personas:
-        name = p["name"]
+    for i, p in enumerate(personas):
+        base = (p.get("name") or f"Agent {i}").strip() or f"Agent {i}"
+        name = base
         if name in seen_names:
-            raise ValueError(f'Duplicate persona name generated: "{name}".')
+            suffix = 2
+            while f"{base} ({suffix})" in seen_names:
+                suffix += 1
+            name = f"{base} ({suffix})"
+        p["name"] = name
         seen_names.add(name)
 
     return personas

@@ -1,0 +1,3502 @@
+[
+  {
+    "id": 0,
+    "name": "Liam Chen",
+    "bio": "A junior data analyst in Seattle who spends his free time hiking in the Cascades.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 1,
+    "name": "Emma Schmidt",
+    "bio": "A retired chemistry teacher from Berlin who enjoys historical non-fiction and gardening.",
+    "initial_belief": 0.821,
+    "susceptibility": 0.128
+  },
+  {
+    "id": 2,
+    "name": "Aarav Patel",
+    "bio": "A medical student in Mumbai focused on public health and community outreach programs.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.562
+  },
+  {
+    "id": 3,
+    "name": "Isabella Rossi",
+    "bio": "A freelance graphic designer in Rome who advocates for sustainable urban living.",
+    "initial_belief": -0.678,
+    "susceptibility": 0.291
+  },
+  {
+    "id": 4,
+    "name": "Kofi Mensah",
+    "bio": "An agricultural entrepreneur in Accra developing tech solutions for local small-scale farmers.",
+    "initial_belief": 0.443,
+    "susceptibility": 0.417
+  },
+  {
+    "id": 5,
+    "name": "Sofia Silva",
+    "bio": "A high school counselor in São Paulo who is passionate about mental health awareness.",
+    "initial_belief": 0.023,
+    "susceptibility": 0.684
+  },
+  {
+    "id": 6,
+    "name": "Noah Williams",
+    "bio": "A construction worker in Sydney who spends most weekends surfing and volunteering at animal shelters.",
+    "initial_belief": -0.198,
+    "susceptibility": 0.521
+  },
+  {
+    "id": 7,
+    "name": "Yuki Tanaka",
+    "bio": "A research scientist in Kyoto specializing in renewable energy and climate modeling.",
+    "initial_belief": -0.912,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 8,
+    "name": "Amira Al-Farsi",
+    "bio": "A journalist in Dubai covering economic trends and geopolitical shifts in the Middle East.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.254
+  },
+  {
+    "id": 9,
+    "name": "Lucas Dubois",
+    "bio": "A pastry chef in Paris who recently started an organic bakery collective.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.478
+  },
+  {
+    "id": 10,
+    "name": "Chloe Thompson",
+    "bio": "A marketing manager in Toronto who enjoys competitive cycling and podcasting about tech.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 11,
+    "name": "Mateo Hernandez",
+    "bio": "A civil engineer in Mexico City working on earthquake-resistant infrastructure projects.",
+    "initial_belief": 0.741,
+    "susceptibility": 0.199
+  },
+  {
+    "id": 12,
+    "name": "Zoe Kim",
+    "bio": "A university student in Seoul majoring in international relations and digital ethics.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.732
+  },
+  {
+    "id": 13,
+    "name": "Ethan Wright",
+    "bio": "A librarian in Boston who curates rare manuscripts and hosts local poetry slams.",
+    "initial_belief": 0.889,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 14,
+    "name": "Fatima Zahra",
+    "bio": "A social worker in Casablanca dedicated to improving literacy rates in rural areas.",
+    "initial_belief": 0.278,
+    "susceptibility": 0.398
+  },
+  {
+    "id": 15,
+    "name": "Sebastian Müller",
+    "bio": "An automotive engineer in Stuttgart who is skeptical of rapid automation in manufacturing.",
+    "initial_belief": -0.543,
+    "susceptibility": 0.421
+  },
+  {
+    "id": 16,
+    "name": "Mia Johnson",
+    "bio": "A fitness instructor in Los Angeles who promotes holistic wellness and mindfulness.",
+    "initial_belief": 0.632,
+    "susceptibility": 0.556
+  },
+  {
+    "id": 17,
+    "name": "Ivan Petrov",
+    "bio": "A software developer in Moscow who contributes to open-source privacy tools.",
+    "initial_belief": -0.789,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 18,
+    "name": "Elena Popa",
+    "bio": "A museum curator in Bucharest specializing in Eastern European folk art history.",
+    "initial_belief": 0.112,
+    "susceptibility": 0.334
+  },
+  {
+    "id": 19,
+    "name": "Ji-won Park",
+    "bio": "A professional gamer in Incheon who advocates for better labor laws in the esports industry.",
+    "initial_belief": -0.321,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 20,
+    "name": "Oscar Nilsson",
+    "bio": "A forestry manager in Stockholm focused on sustainable timber harvesting and biodiversity.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.287
+  },
+  {
+    "id": 21,
+    "name": "Ava Martinez",
+    "bio": "An aspiring actress in Madrid working part-time as a translator for non-profits.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 22,
+    "name": "Benjamin Clark",
+    "bio": "A financial advisor in Chicago who spends his weekends restoring vintage motorcycles.",
+    "initial_belief": 0.901,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 23,
+    "name": "Lila Gupta",
+    "bio": "An environmental lawyer in New Delhi fighting against industrial pollution in the Yamuna river.",
+    "initial_belief": -0.854,
+    "susceptibility": 0.198
+  },
+  {
+    "id": 24,
+    "name": "Hugo Ferreira",
+    "bio": "A maritime pilot in Lisbon with a deep interest in oceanography and climate change.",
+    "initial_belief": 0.389,
+    "susceptibility": 0.467
+  },
+  {
+    "id": 25,
+    "name": "Grace O'Malley",
+    "bio": "A public relations specialist in Dublin who enjoys traditional Irish music and rowing.",
+    "initial_belief": 0.045,
+    "susceptibility": 0.589
+  },
+  {
+    "id": 26,
+    "name": "Xavier Lopez",
+    "bio": "A high school history teacher in Barcelona who organizes local community garden projects.",
+    "initial_belief": -0.476,
+    "susceptibility": 0.354
+  },
+  {
+    "id": 27,
+    "name": "Nina Sorensen",
+    "bio": "A furniture designer in Copenhagen who prioritizes minimalism and recycled materials.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.221
+  },
+  {
+    "id": 28,
+    "name": "Samuel Adebayo",
+    "bio": "A logistics coordinator in Lagos who is an avid follower of global economic news.",
+    "initial_belief": 0.223,
+    "susceptibility": 0.445
+  },
+  {
+    "id": 29,
+    "name": "Maya Lin",
+    "bio": "A landscape architect in San Francisco focusing on drought-resistant public spaces.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 30,
+    "name": "Oliver Brown",
+    "bio": "A barista in Melbourne who dreams of opening his own specialty coffee roastery.",
+    "initial_belief": 0.187,
+    "susceptibility": 0.721
+  },
+  {
+    "id": 31,
+    "name": "Sasha Volkov",
+    "bio": "A physicist in Saint Petersburg researching quantum computing and its future applications.",
+    "initial_belief": -0.954,
+    "susceptibility": 0.056
+  },
+  {
+    "id": 32,
+    "name": "Isabelle Laurent",
+    "bio": "A fashion stylist in Lyon who promotes ethical manufacturing and slow fashion.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.534
+  },
+  {
+    "id": 33,
+    "name": "Diego Ramirez",
+    "bio": "A social media manager in Buenos Aires who is very active in local political debates.",
+    "initial_belief": -0.289,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 34,
+    "name": "Emily Watson",
+    "bio": "An elementary school principal in Manchester who believes in the power of early childhood arts education.",
+    "initial_belief": 0.756,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 35,
+    "name": "Kenji Sato",
+    "bio": "A sushi chef in Tokyo who values tradition but experiments with fusion flavors.",
+    "initial_belief": 0.341,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 36,
+    "name": "Leila Haddad",
+    "bio": "A human rights lawyer in Beirut working on refugee resettlement programs.",
+    "initial_belief": -0.723,
+    "susceptibility": 0.178
+  },
+  {
+    "id": 37,
+    "name": "Thomas Baker",
+    "bio": "A retired coal miner in West Virginia who enjoys woodcarving and local history.",
+    "initial_belief": 0.945,
+    "susceptibility": 0.101
+  },
+  {
+    "id": 38,
+    "name": "Freja Nielsen",
+    "bio": "A biologist in Aarhus studying the impact of microplastics on North Sea marine life.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 39,
+    "name": "Gabriel Santos",
+    "bio": "A professional dancer in Rio de Janeiro who teaches samba to underprivileged youth.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.654
+  },
+  {
+    "id": 40,
+    "name": "Charlotte Green",
+    "bio": "A bookstore owner in Portland who hosts weekly community discussion groups.",
+    "initial_belief": -0.089,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 41,
+    "name": "Arjun Singh",
+    "bio": "A software architect in Bangalore who is an enthusiast of classical Indian music.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 42,
+    "name": "Nora Holm",
+    "bio": "A meteorologist in Oslo who enjoys cross-country skiing and climate advocacy.",
+    "initial_belief": -0.812,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 43,
+    "name": "William Taylor",
+    "bio": "An insurance adjuster in Dallas who spends his weekends at local high school football games.",
+    "initial_belief": 0.543,
+    "susceptibility": 0.321
+  },
+  {
+    "id": 44,
+    "name": "Jasmin Kaur",
+    "bio": "A dental hygienist in Vancouver who volunteers at a local food bank every Sunday.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 45,
+    "name": "Leo Rossi",
+    "bio": "A photography student in Florence capturing the intersection of ancient and modern architecture.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.689
+  },
+  {
+    "id": 46,
+    "name": "Priya Sharma",
+    "bio": "A content creator in Mumbai focusing on travel and sustainable lifestyle choices.",
+    "initial_belief": 0.478,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 47,
+    "name": "Arthur Morgan",
+    "bio": "A ranch hand in Montana who prefers the quiet of the mountains to city life.",
+    "initial_belief": 0.867,
+    "susceptibility": 0.098
+  },
+  {
+    "id": 48,
+    "name": "Lin Wei",
+    "bio": "A bank teller in Shanghai who is an avid player of traditional board games like Go.",
+    "initial_belief": 0.012,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 49,
+    "name": "Sofia Kostas",
+    "bio": "A tour guide in Athens who is passionate about sharing the history of the Parthenon.",
+    "initial_belief": 0.356,
+    "susceptibility": 0.378
+  },
+  {
+    "id": 50,
+    "name": "Jacob Anderson",
+    "bio": "A plumber in Minneapolis who enjoys ice fishing and community theater.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.245
+  },
+  {
+    "id": 51,
+    "name": "Elena Varga",
+    "bio": "A veterinary technician in Budapest who specializes in the care of exotic birds.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 52,
+    "name": "Omar Bakir",
+    "bio": "An architect in Cairo who is interested in preserving traditional Egyptian building techniques.",
+    "initial_belief": 0.489,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 53,
+    "name": "Sienna Miller",
+    "bio": "A freelance writer in London who covers the intersection of technology and mental health.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.589
+  },
+  {
+    "id": 54,
+    "name": "Hiroshi Ito",
+    "bio": "A retired engineer in Osaka who spends his time practicing calligraphy and gardening.",
+    "initial_belief": 0.712,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 55,
+    "name": "Ananya Rao",
+    "bio": "A research analyst in Hyderabad studying urban migration patterns in India.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 56,
+    "name": "Markus Weber",
+    "bio": "A factory supervisor in Munich who is a staunch supporter of local labor unions.",
+    "initial_belief": 0.245,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 57,
+    "name": "Clara Jimenez",
+    "bio": "A social worker in Bogota focused on providing education to children in underserved areas.",
+    "initial_belief": -0.023,
+    "susceptibility": 0.634
+  },
+  {
+    "id": 58,
+    "name": "Daniel Kim",
+    "bio": "A startup founder in Austin who is passionate about decentralized finance and crypto.",
+    "initial_belief": -0.876,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 59,
+    "name": "Zahra Mansour",
+    "bio": "A pharmacist in Amman who enjoys hiking and volunteering at a local youth center.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 60,
+    "name": "Julian Scott",
+    "bio": "A music producer in Nashville who is always looking for the next big sound in country music.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 61,
+    "name": "Elena Fischer",
+    "bio": "A yoga instructor in Zurich who believes in the importance of spiritual and physical balance.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.445
+  },
+  {
+    "id": 62,
+    "name": "Ravi Kumar",
+    "bio": "A taxi driver in Delhi who loves discussing politics with his passengers.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.823
+  },
+  {
+    "id": 63,
+    "name": "Alice Thompson",
+    "bio": "A retired nurse in Edinburgh who volunteers at a local hospice and loves birdwatching.",
+    "initial_belief": 0.734,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 64,
+    "name": "Mateo Silva",
+    "bio": "A professional soccer player in Lisbon who is an advocate for anti-racism in sports.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.378
+  },
+  {
+    "id": 65,
+    "name": "Lina Chen",
+    "bio": "A fashion designer in Taipei who creates clothing from recycled ocean plastics.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.298
+  },
+  {
+    "id": 66,
+    "name": "George Wilson",
+    "bio": "A history professor in Oxford who specializes in the Victorian era and industrialization.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 67,
+    "name": "Fatima Ahmed",
+    "bio": "A software engineer in Nairobi who is active in the local tech startup ecosystem.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.467
+  },
+  {
+    "id": 68,
+    "name": "Lukas Novak",
+    "bio": "A structural engineer in Prague who enjoys urban exploration and photography.",
+    "initial_belief": -0.189,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 69,
+    "name": "Isabella Garcia",
+    "bio": "A chef in Miami who specializes in Caribbean-fusion cuisine and local sourcing.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 70,
+    "name": "Ali Hassan",
+    "bio": "A merchant in Istanbul who has been running his family's rug business for thirty years.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 71,
+    "name": "Sophie Martin",
+    "bio": "A biologist in Marseille studying the impact of rising sea levels on coastal ecosystems.",
+    "initial_belief": -0.843,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 72,
+    "name": "David Miller",
+    "bio": "A carpenter in Denver who builds custom furniture and teaches woodworking classes.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 73,
+    "name": "Mei Ling",
+    "bio": "A graduate student in Beijing studying the history of the Silk Road and trade routes.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 74,
+    "name": "Oscar Hernandez",
+    "bio": "A firefighter in Los Angeles who is an advocate for mental health support for first responders.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.432
+  },
+  {
+    "id": 75,
+    "name": "Freya Bjornson",
+    "bio": "A climate activist in Reykjavik who organizes protests against glacier melting.",
+    "initial_belief": -0.912,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 76,
+    "name": "Amir Khan",
+    "bio": "A cricket coach in Karachi who believes in the power of sports to unite communities.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 77,
+    "name": "Evelyn Reed",
+    "bio": "A novelist in New York City who writes about the lives of ordinary people in the city.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.478
+  },
+  {
+    "id": 78,
+    "name": "Hans Schmidt",
+    "bio": "A retired banker in Frankfurt who spends his time traveling and collecting rare coins.",
+    "initial_belief": 0.834,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 79,
+    "name": "Nisha Patel",
+    "bio": "A pediatric nurse in London who is passionate about improving child healthcare access.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 80,
+    "name": "Carlos Gomez",
+    "bio": "A street artist in Bogota whose work focuses on social justice and peace in Colombia.",
+    "initial_belief": -0.678,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 81,
+    "name": "Aiko Watanabe",
+    "bio": "A tea master in Uji who is dedicated to preserving the traditional art of the tea ceremony.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 82,
+    "name": "Benjamin Wright",
+    "bio": "A corporate lawyer in Sydney who enjoys sailing and competitive chess.",
+    "initial_belief": 0.712,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 83,
+    "name": "Zara Ali",
+    "bio": "A human rights activist in Tehran who works on women's empowerment initiatives.",
+    "initial_belief": -0.789,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 84,
+    "name": "Luca Moretti",
+    "bio": "A vineyard owner in Tuscany who is transitioning his farm to fully organic methods.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 85,
+    "name": "Sienna Rose",
+    "bio": "An influencer in Gold Coast who promotes veganism and eco-friendly travel.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 86,
+    "name": "Pavel Smirnov",
+    "bio": "An aerospace engineer in Samara who is skeptical of private space exploration.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 87,
+    "name": "Elena Petrova",
+    "bio": "A ballet dancer in Saint Petersburg who teaches at a prestigious dance academy.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 88,
+    "name": "Jackson Lee",
+    "bio": "A high school basketball coach in Atlanta who mentors at-risk youth.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.478
+  },
+  {
+    "id": 89,
+    "name": "Maria Rossi",
+    "bio": "A grandmother in Naples who is famous for her traditional pasta recipes and hospitality.",
+    "initial_belief": 0.889,
+    "susceptibility": 0.123
+  },
+  {
+    "id": 90,
+    "name": "Kenji Yamamoto",
+    "bio": "A digital artist in Tokyo exploring the intersection of AI and traditional Japanese art.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.634
+  },
+  {
+    "id": 91,
+    "name": "Sara Lindholm",
+    "bio": "A furniture restorer in Helsinki who values craftsmanship and historical preservation.",
+    "initial_belief": 0.543,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 92,
+    "name": "Ahmed Mansour",
+    "bio": "A civil servant in Riyadh who is interested in urban planning and smart city initiatives.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 93,
+    "name": "Olivia Smith",
+    "bio": "A college student in Toronto who is active in the local environmentalist movement.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 94,
+    "name": "Thomas Müller",
+    "bio": "A beer brewer in Munich who is proud of his family's centuries-old brewing tradition.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 95,
+    "name": "Anjali Devi",
+    "bio": "A classical dancer in Chennai who runs a school for traditional Bharatnatyam.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.321
+  },
+  {
+    "id": 96,
+    "name": "Liam O'Connor",
+    "bio": "A software tester in Dublin who enjoys playing rugby and visiting local pubs.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 97,
+    "name": "Sofia Hernandez",
+    "bio": "A community organizer in San Diego working on immigration reform and support services.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 98,
+    "name": "Viktor Volkov",
+    "bio": "A retired military officer in Vladivostok who is skeptical of modern international relations.",
+    "initial_belief": 0.912,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 99,
+    "name": "Elena Santos",
+    "bio": "A marine biologist in Lisbon studying the migration patterns of dolphins in the Atlantic.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 100,
+    "name": "Samuel Jackson",
+    "bio": "A jazz musician in New Orleans who plays the trumpet and teaches music to children.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 101,
+    "name": "Mei Chen",
+    "bio": "A tech journalist in Hong Kong covering the latest developments in consumer electronics.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 102,
+    "name": "Arthur Wilson",
+    "bio": "A retired judge in London who enjoys birdwatching and reading historical biographies.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 103,
+    "name": "Isabella Silva",
+    "bio": "A fashion photographer in São Paulo who works with local independent designers.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 104,
+    "name": "Omar Ali",
+    "bio": "A small business owner in Amman who imports and sells traditional Arabic spices.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 105,
+    "name": "Nora Bakke",
+    "bio": "A landscape photographer in Bergen capturing the beauty of the Norwegian fjords.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 106,
+    "name": "David Brown",
+    "bio": "A truck driver in Ohio who listens to talk radio and podcasts on long hauls.",
+    "initial_belief": 0.634,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 107,
+    "name": "Amira Saleh",
+    "bio": "A university professor in Cairo specializing in ancient Egyptian linguistics.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 108,
+    "name": "Lukas Weber",
+    "bio": "A mountain guide in Innsbruck who is concerned about the impact of tourism on the Alps.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 109,
+    "name": "Priya Nair",
+    "bio": "A software engineer in Bangalore who is an advocate for work-life balance in tech.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 110,
+    "name": "Gabriel Rossi",
+    "bio": "A student in Milan who is passionate about sustainable fashion and local design.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 111,
+    "name": "Elena Popescu",
+    "bio": "A florist in Bucharest who creates elaborate arrangements for local weddings.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 112,
+    "name": "Hiroto Tanaka",
+    "bio": "A civil servant in Yokohama who is interested in disaster preparedness and safety.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 113,
+    "name": "Sienna Williams",
+    "bio": "A travel blogger in Melbourne who explores off-the-beaten-path destinations.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 114,
+    "name": "Kofi Boateng",
+    "bio": "A teacher in Kumasi who believes in the importance of vocational training for youth.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 115,
+    "name": "Isabella Martinez",
+    "bio": "A graphic designer in Madrid who specializes in branding for social enterprises.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 116,
+    "name": "Samuel Miller",
+    "bio": "A retired police officer in Chicago who enjoys fishing and community service.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 117,
+    "name": "Maya Singh",
+    "bio": "A research scientist in Delhi studying the effects of air pollution on lung health.",
+    "initial_belief": -0.789,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 118,
+    "name": "Lukas Fischer",
+    "bio": "A professional skier in St. Moritz who is an advocate for climate action in winter sports.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 119,
+    "name": "Fatima Bakir",
+    "bio": "A journalist in Tunis covering local politics and social justice movements.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 120,
+    "name": "David Evans",
+    "bio": "A geologist in Perth who works in the mining industry but values environmental protection.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 121,
+    "name": "Elena Ivanova",
+    "bio": "A university student in Sofia majoring in European studies and political science.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.734
+  },
+  {
+    "id": 122,
+    "name": "Julian Garcia",
+    "bio": "A baker in Buenos Aires who is known for his traditional sourdough bread.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 123,
+    "name": "Nora Holmquist",
+    "bio": "A furniture designer in Stockholm who focuses on functional and sustainable pieces.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 124,
+    "name": "Arjun Patel",
+    "bio": "A tech entrepreneur in Mumbai who is building a platform for local artisans.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 125,
+    "name": "Sophie Dubois",
+    "bio": "A historian in Paris specializing in the French Revolution and its global impact.",
+    "initial_belief": 0.712,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 126,
+    "name": "Mateo Rossi",
+    "bio": "A young architect in Milan who is passionate about vertical forests and urban greening.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 127,
+    "name": "Amira Hassan",
+    "bio": "A doctor in Alexandria who works in a public hospital and advocates for health equity.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 128,
+    "name": "Liam Taylor",
+    "bio": "A software developer in Manchester who is an avid fan of local football and indie music.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.589
+  },
+  {
+    "id": 129,
+    "name": "Elena Schmidt",
+    "bio": "A retired librarian in Berlin who enjoys reading historical fiction and volunteering at a local garden.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 130,
+    "name": "Kenji Sato (2)",
+    "bio": "A chef in Kyoto who is dedicated to traditional Japanese cuisine and local ingredients.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 131,
+    "name": "Sienna Rose (2)",
+    "bio": "A freelance writer in Sydney who covers lifestyle, travel, and environmental issues.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 132,
+    "name": "Oscar Nilsson (2)",
+    "bio": "A carpenter in Stockholm who specializes in building eco-friendly wooden houses.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 133,
+    "name": "Isabella Garcia (2)",
+    "bio": "A teacher in Mexico City who is passionate about bilingual education and cultural exchange.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 134,
+    "name": "Samuel Adebayo (2)",
+    "bio": "A logistics manager in Lagos who is an avid follower of international business and trade.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 135,
+    "name": "Maya Lin (2)",
+    "bio": "An artist in New York City whose work explores the relationship between humans and nature.",
+    "initial_belief": -0.678,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 136,
+    "name": "Lukas Müller",
+    "bio": "An engineer in Munich who works on developing more efficient electric vehicle batteries.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 137,
+    "name": "Priya Sharma (2)",
+    "bio": "A lawyer in Delhi who specializes in environmental law and corporate social responsibility.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 138,
+    "name": "George Wilson (2)",
+    "bio": "A retired professor in Edinburgh who enjoys walking in the Highlands and reading philosophy.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 139,
+    "name": "Fatima Ahmed (2)",
+    "bio": "A software engineer in Nairobi who is passionate about using tech to solve social problems.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 140,
+    "name": "Ivan Petrov (2)",
+    "bio": "A data scientist in Moscow who is interested in the ethical implications of artificial intelligence.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 141,
+    "name": "Elena Varga (2)",
+    "bio": "A veterinarian in Budapest who is an advocate for animal rights and welfare.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 142,
+    "name": "Arjun Singh (2)",
+    "bio": "A businessman in Mumbai who is an avid collector of modern Indian art.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 143,
+    "name": "Sofia Kostas (2)",
+    "bio": "A student in Athens who is active in local community projects and social movements.",
+    "initial_belief": -0.543,
+    "susceptibility": 0.732
+  },
+  {
+    "id": 144,
+    "name": "Liam Brown",
+    "bio": "A mechanic in Toronto who enjoys restoring classic cars and attending local car shows.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 145,
+    "name": "Isabelle Laurent (2)",
+    "bio": "A fashion designer in Lyon who focuses on sustainable materials and ethical production.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 146,
+    "name": "Mateo Hernandez (2)",
+    "bio": "A civil engineer in Bogota who is working on improving the city's public transportation system.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 147,
+    "name": "Chloe Thompson (2)",
+    "bio": "A marketing specialist in London who is passionate about digital storytelling and brand ethics.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 148,
+    "name": "Hiroshi Ito (2)",
+    "bio": "A retired teacher in Tokyo who enjoys practicing calligraphy and visiting historical temples.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 149,
+    "name": "Amira Saleh (2)",
+    "bio": "A journalist in Dubai who covers business and technology trends in the Middle East.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 150,
+    "name": "Lukas Novak (2)",
+    "bio": "An architect in Prague who is interested in the adaptive reuse of historical buildings.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 151,
+    "name": "Nora Bakke (2)",
+    "bio": "A photographer in Oslo who captures the interaction between urban life and nature.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 152,
+    "name": "Samuel Wright",
+    "bio": "A librarian in Boston who is an expert on early American history and literature.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 153,
+    "name": "Maya Singh (2)",
+    "bio": "A scientist in Bangalore who is researching sustainable agricultural practices in India.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 154,
+    "name": "Julian Garcia (2)",
+    "bio": "A musician in Buenos Aires who plays the tango and teaches music to children.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 155,
+    "name": "Elena Popescu (2)",
+    "bio": "A social worker in Bucharest who is dedicated to helping vulnerable children and families.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 156,
+    "name": "Arthur Morgan (2)",
+    "bio": "A rancher in Montana who values traditional land management and community cooperation.",
+    "initial_belief": 0.867,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 157,
+    "name": "Isabella Rossi (2)",
+    "bio": "A designer in Rome who creates contemporary jewelry inspired by ancient Roman art.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 158,
+    "name": "Kenji Yamamoto (2)",
+    "bio": "A tech entrepreneur in Tokyo who is building a platform for remote collaboration.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 159,
+    "name": "Sienna Miller (2)",
+    "bio": "A lifestyle blogger in Los Angeles who focuses on mindfulness and holistic health.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 160,
+    "name": "Oscar Hernandez (2)",
+    "bio": "A firefighter in Madrid who is an advocate for community safety and disaster prevention.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 161,
+    "name": "Freya Bjornson (2)",
+    "bio": "A student in Reykjavik who is passionate about renewable energy and climate policy.",
+    "initial_belief": -0.812,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 162,
+    "name": "Amir Khan (2)",
+    "bio": "A sports coach in London who believes in the power of football to integrate communities.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 163,
+    "name": "Evelyn Reed (2)",
+    "bio": "A writer in New York City who covers urban culture and the arts for various magazines.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 164,
+    "name": "Hans Schmidt (2)",
+    "bio": "A retired engineer in Frankfurt who enjoys traveling and learning about new cultures.",
+    "initial_belief": 0.834,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 165,
+    "name": "Nisha Patel (2)",
+    "bio": "A nurse in Birmingham who is dedicated to improving patient care in public hospitals.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 166,
+    "name": "Carlos Gomez (2)",
+    "bio": "An artist in Barcelona whose work focuses on the history and culture of Catalonia.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 167,
+    "name": "Aiko Watanabe (2)",
+    "bio": "A craftsperson in Kyoto who specializes in traditional Japanese pottery and ceramics.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 168,
+    "name": "Benjamin Wright (2)",
+    "bio": "A lawyer in Sydney who is an advocate for corporate transparency and accountability.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 169,
+    "name": "Zara Ali (2)",
+    "bio": "A student in London who is active in social justice and human rights campaigns.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 170,
+    "name": "Luca Moretti (2)",
+    "bio": "A chef in Florence who is passionate about traditional Italian cooking and local food.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 171,
+    "name": "Sienna Rose (3)",
+    "bio": "A travel influencer in Gold Coast who promotes sustainable and ethical tourism.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 172,
+    "name": "Pavel Smirnov (2)",
+    "bio": "An engineer in Moscow who is interested in the history of space exploration and technology.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 173,
+    "name": "Elena Petrova (2)",
+    "bio": "A teacher in Saint Petersburg who is dedicated to promoting literature and the arts in schools.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 174,
+    "name": "Jackson Lee (2)",
+    "bio": "A coach in Chicago who uses basketball to teach teamwork and leadership to youth.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 175,
+    "name": "Maria Rossi (2)",
+    "bio": "A baker in Rome who is known for her traditional Italian pastries and desserts.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 176,
+    "name": "Kenji Yamamoto (3)",
+    "bio": "An artist in Tokyo who explores the intersection of traditional and digital media.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.634
+  },
+  {
+    "id": 177,
+    "name": "Sara Lindholm (2)",
+    "bio": "A designer in Helsinki who focuses on creating functional and beautiful everyday objects.",
+    "initial_belief": 0.543,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 178,
+    "name": "Ahmed Mansour (2)",
+    "bio": "A public servant in Riyadh who is interested in urban development and sustainability.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 179,
+    "name": "Olivia Smith (2)",
+    "bio": "A student in Toronto who is active in local environmental and social justice movements.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 180,
+    "name": "Thomas Müller (2)",
+    "bio": "A brewer in Munich who is passionate about traditional German beer and brewing techniques.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 181,
+    "name": "Anjali Devi (2)",
+    "bio": "A dancer in Chennai who is dedicated to preserving and promoting traditional Indian dance.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.321
+  },
+  {
+    "id": 182,
+    "name": "Liam O'Connor (2)",
+    "bio": "A developer in Dublin who is interested in the history of Irish technology and innovation.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 183,
+    "name": "Sofia Hernandez (2)",
+    "bio": "An organizer in San Diego who works on community development and social justice projects.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 184,
+    "name": "Viktor Volkov (2)",
+    "bio": "A retired officer in Vladivostok who is interested in history and international relations.",
+    "initial_belief": 0.912,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 185,
+    "name": "Elena Santos (2)",
+    "bio": "A scientist in Lisbon who is researching the impact of climate change on marine life.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 186,
+    "name": "Samuel Jackson (2)",
+    "bio": "A musician in New Orleans who is dedicated to preserving and promoting traditional jazz music.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 187,
+    "name": "Mei Chen (2)",
+    "bio": "A journalist in Hong Kong who covers the latest trends in technology and innovation.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 188,
+    "name": "Arthur Wilson (2)",
+    "bio": "A retired judge in London who is an expert on legal history and constitutional law.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 189,
+    "name": "Isabella Silva (2)",
+    "bio": "A photographer in São Paulo who focuses on capturing the beauty of urban life and culture.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 190,
+    "name": "Omar Ali (2)",
+    "bio": "A merchant in Amman who is dedicated to preserving traditional Arabic crafts and culture.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 191,
+    "name": "Nora Bakke (3)",
+    "bio": "A photographer in Oslo who captures the interaction between people and the natural world.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 192,
+    "name": "David Brown (2)",
+    "bio": "A driver in Ohio who is an avid listener of podcasts and talk radio on long hauls.",
+    "initial_belief": 0.634,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 193,
+    "name": "Amira Saleh (3)",
+    "bio": "A professor in Cairo who is an expert on ancient Egyptian history and culture.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 194,
+    "name": "Lukas Weber (2)",
+    "bio": "A guide in Innsbruck who is dedicated to promoting sustainable tourism in the Alps.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 195,
+    "name": "Priya Nair (2)",
+    "bio": "A developer in Bangalore who is an advocate for diversity and inclusion in the tech industry.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 196,
+    "name": "Gabriel Rossi (2)",
+    "bio": "A student in Milan who is passionate about sustainable design and urban innovation.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 197,
+    "name": "Elena Popescu (3)",
+    "bio": "A florist in Bucharest who is known for her creative and beautiful floral arrangements.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 198,
+    "name": "Hiroto Tanaka (2)",
+    "bio": "A civil servant in Yokohama who is interested in urban planning and smart city technology.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 199,
+    "name": "Sienna Williams (2)",
+    "bio": "A blogger in Melbourne who covers travel, lifestyle, and environmental issues.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 200,
+    "name": "Kofi Boateng (2)",
+    "bio": "A teacher in Kumasi who is dedicated to providing quality education to local youth.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 201,
+    "name": "Isabella Martinez (2)",
+    "bio": "A designer in Madrid who specializes in creating branding for social enterprises.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 202,
+    "name": "Samuel Miller (2)",
+    "bio": "A retired officer in Chicago who is active in local community service and outreach.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 203,
+    "name": "Maya Singh (3)",
+    "bio": "A scientist in Delhi who is researching the impact of pollution on human health.",
+    "initial_belief": -0.789,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 204,
+    "name": "Lukas Fischer (2)",
+    "bio": "A skier in St. Moritz who is an advocate for climate action and environmental protection.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 205,
+    "name": "Fatima Bakir (2)",
+    "bio": "A journalist in Tunis who covers social and political issues in the region.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 206,
+    "name": "David Evans (2)",
+    "bio": "A geologist in Perth who is interested in the history of the earth and mineral resources.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 207,
+    "name": "Elena Ivanova (2)",
+    "bio": "A student in Sofia who is active in local social justice and human rights movements.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.734
+  },
+  {
+    "id": 208,
+    "name": "Julian Garcia (3)",
+    "bio": "A baker in Buenos Aires who is passionate about traditional bread making and local food.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 209,
+    "name": "Nora Holmquist (2)",
+    "bio": "A designer in Stockholm who focuses on creating functional and sustainable furniture.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 210,
+    "name": "Arjun Patel (2)",
+    "bio": "An entrepreneur in Mumbai who is building a platform for local artists and creators.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 211,
+    "name": "Sophie Dubois (2)",
+    "bio": "A historian in Paris who is an expert on the history of the French Enlightenment.",
+    "initial_belief": 0.712,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 212,
+    "name": "Mateo Rossi (2)",
+    "bio": "An architect in Milan who is passionate about sustainable urban development and greening.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 213,
+    "name": "Amira Hassan (2)",
+    "bio": "A doctor in Alexandria who is dedicated to providing quality healthcare to all people.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 214,
+    "name": "Liam Taylor (2)",
+    "bio": "A developer in Manchester who is an avid fan of local music and culture.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.589
+  },
+  {
+    "id": 215,
+    "name": "Elena Schmidt (2)",
+    "bio": "A retired librarian in Berlin who is an expert on historical fiction and literature.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 216,
+    "name": "Kenji Sato (3)",
+    "bio": "A chef in Kyoto who is dedicated to traditional Japanese cooking and local ingredients.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 217,
+    "name": "Sienna Rose (4)",
+    "bio": "A writer in Sydney who covers lifestyle, travel, and environmental issues.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 218,
+    "name": "Oscar Nilsson (3)",
+    "bio": "A carpenter in Stockholm who specializes in building sustainable and beautiful homes.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 219,
+    "name": "Isabella Garcia (3)",
+    "bio": "A teacher in Mexico City who is passionate about bilingual education and culture.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 220,
+    "name": "Samuel Adebayo (3)",
+    "bio": "A manager in Lagos who is an avid follower of international business and trade.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 221,
+    "name": "Maya Lin (3)",
+    "bio": "An artist in New York City whose work explores the human relationship with nature.",
+    "initial_belief": -0.678,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 222,
+    "name": "Lukas Müller (2)",
+    "bio": "An engineer in Munich who is passionate about renewable energy and technology.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 223,
+    "name": "Priya Sharma (3)",
+    "bio": "A lawyer in Delhi who specializes in environmental law and corporate responsibility.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 224,
+    "name": "George Wilson (3)",
+    "bio": "A retired professor in Edinburgh who is an expert on philosophy and history.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 225,
+    "name": "Fatima Ahmed (3)",
+    "bio": "A developer in Nairobi who is passionate about using tech to solve social problems.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 226,
+    "name": "Ivan Petrov (3)",
+    "bio": "A scientist in Moscow who is interested in the ethical implications of AI.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 227,
+    "name": "Elena Varga (3)",
+    "bio": "A veterinarian in Budapest who is an advocate for animal rights and welfare.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 228,
+    "name": "Arjun Singh (3)",
+    "bio": "A businessman in Mumbai who is an avid collector of modern Indian art.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 229,
+    "name": "Sofia Kostas (3)",
+    "bio": "A student in Athens who is active in local community projects and movements.",
+    "initial_belief": -0.543,
+    "susceptibility": 0.732
+  },
+  {
+    "id": 230,
+    "name": "Liam Brown (2)",
+    "bio": "A mechanic in Toronto who enjoys restoring classic cars and attending car shows.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 231,
+    "name": "Isabelle Laurent (3)",
+    "bio": "A designer in Lyon who focuses on sustainable materials and ethical fashion.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 232,
+    "name": "Mateo Hernandez (3)",
+    "bio": "A civil engineer in Bogota who is working on improving city infrastructure.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 233,
+    "name": "Chloe Thompson (3)",
+    "bio": "A marketing specialist in London who is passionate about digital storytelling.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 234,
+    "name": "Hiroshi Ito (3)",
+    "bio": "A retired teacher in Tokyo who enjoys calligraphy and historical research.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 235,
+    "name": "Amira Saleh (4)",
+    "bio": "A journalist in Dubai who covers business and tech trends in the region.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 236,
+    "name": "Lukas Novak (3)",
+    "bio": "An architect in Prague who is interested in historical building adaptive reuse.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 237,
+    "name": "Nora Bakke (4)",
+    "bio": "A photographer in Oslo who captures the interaction between city and nature.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 238,
+    "name": "Samuel Wright (2)",
+    "bio": "A librarian in Boston who is an expert on early American history and books.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 239,
+    "name": "Maya Singh (4)",
+    "bio": "A scientist in Bangalore who is researching sustainable agricultural practices.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 240,
+    "name": "Julian Garcia (4)",
+    "bio": "A musician in Buenos Aires who plays tango and teaches music to children.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 241,
+    "name": "Elena Popescu (4)",
+    "bio": "A social worker in Bucharest who is dedicated to helping vulnerable people.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 242,
+    "name": "Arthur Morgan (3)",
+    "bio": "A rancher in Montana who values traditional land management and cooperation.",
+    "initial_belief": 0.867,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 243,
+    "name": "Isabella Rossi (3)",
+    "bio": "A designer in Rome who creates jewelry inspired by ancient Roman art.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 244,
+    "name": "Kenji Yamamoto (4)",
+    "bio": "A tech entrepreneur in Tokyo who is building a platform for collaboration.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 245,
+    "name": "Sienna Miller (3)",
+    "bio": "A blogger in Los Angeles who focuses on mindfulness and holistic health.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 246,
+    "name": "Oscar Hernandez (3)",
+    "bio": "A firefighter in Madrid who is an advocate for safety and prevention.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 247,
+    "name": "Freya Bjornson (3)",
+    "bio": "A student in Reykjavik who is passionate about renewable energy and policy.",
+    "initial_belief": -0.812,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 248,
+    "name": "Amir Khan (3)",
+    "bio": "A coach in London who believes in the power of sports to integrate people.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 249,
+    "name": "Evelyn Reed (3)",
+    "bio": "A writer in New York City who covers urban culture and the arts.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 250,
+    "name": "Hans Schmidt (3)",
+    "bio": "A retired engineer in Frankfurt who enjoys traveling and new cultures.",
+    "initial_belief": 0.834,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 251,
+    "name": "Nisha Patel (3)",
+    "bio": "A nurse in Birmingham who is dedicated to improving hospital patient care.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 252,
+    "name": "Carlos Gomez (3)",
+    "bio": "An artist in Barcelona whose work focuses on the history of Catalonia.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 253,
+    "name": "Aiko Watanabe (3)",
+    "bio": "A craftsperson in Kyoto who specializes in traditional Japanese pottery.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 254,
+    "name": "Benjamin Wright (3)",
+    "bio": "A lawyer in Sydney who is an advocate for corporate accountability.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 255,
+    "name": "Zara Ali (3)",
+    "bio": "A student in London who is active in social justice and rights campaigns.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 256,
+    "name": "Luca Moretti (3)",
+    "bio": "A chef in Florence who is passionate about traditional Italian food.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 257,
+    "name": "Sienna Rose (5)",
+    "bio": "A travel influencer in Gold Coast who promotes sustainable tourism.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 258,
+    "name": "Pavel Smirnov (3)",
+    "bio": "An engineer in Moscow who is interested in the history of technology.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 259,
+    "name": "Elena Petrova (3)",
+    "bio": "A teacher in Saint Petersburg who is dedicated to literature and art.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 260,
+    "name": "Jackson Lee (3)",
+    "bio": "A coach in Chicago who uses basketball to teach leadership to youth.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 261,
+    "name": "Maria Rossi (3)",
+    "bio": "A baker in Rome who is known for her traditional Italian pastries.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 262,
+    "name": "Kenji Yamamoto (5)",
+    "bio": "An artist in Tokyo who explores traditional and digital media.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.634
+  },
+  {
+    "id": 263,
+    "name": "Sara Lindholm (3)",
+    "bio": "A designer in Helsinki who focuses on beautiful everyday objects.",
+    "initial_belief": 0.543,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 264,
+    "name": "Ahmed Mansour (3)",
+    "bio": "A public servant in Riyadh who is interested in urban development.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 265,
+    "name": "Olivia Smith (3)",
+    "bio": "A student in Toronto who is active in local justice movements.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 266,
+    "name": "Thomas Müller (3)",
+    "bio": "A brewer in Munich who is passionate about traditional German beer.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 267,
+    "name": "Anjali Devi (3)",
+    "bio": "A dancer in Chennai who is dedicated to traditional Indian dance.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.321
+  },
+  {
+    "id": 268,
+    "name": "Liam O'Connor (3)",
+    "bio": "A developer in Dublin who is interested in Irish technology history.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 269,
+    "name": "Sofia Hernandez (3)",
+    "bio": "An organizer in San Diego who works on community development.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 270,
+    "name": "Viktor Volkov (3)",
+    "bio": "A retired officer in Vladivostok who is interested in history.",
+    "initial_belief": 0.912,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 271,
+    "name": "Elena Santos (3)",
+    "bio": "A scientist in Lisbon who is researching climate change impact.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 272,
+    "name": "Samuel Jackson (3)",
+    "bio": "A musician in New Orleans who is dedicated to traditional jazz.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 273,
+    "name": "Mei Chen (3)",
+    "bio": "A journalist in Hong Kong who covers technology and innovation.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 274,
+    "name": "Arthur Wilson (3)",
+    "bio": "A retired judge in London who is an expert on legal history.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 275,
+    "name": "Isabella Silva (3)",
+    "bio": "A photographer in São Paulo who captures urban life and culture.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 276,
+    "name": "Omar Ali (3)",
+    "bio": "A merchant in Amman who is dedicated to traditional Arabic crafts.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 277,
+    "name": "Nora Bakke (5)",
+    "bio": "A photographer in Oslo who captures the natural world and people.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 278,
+    "name": "David Brown (3)",
+    "bio": "A driver in Ohio who is an avid listener of talk radio.",
+    "initial_belief": 0.634,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 279,
+    "name": "Amira Saleh (5)",
+    "bio": "A professor in Cairo who is an expert on Egyptian history.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 280,
+    "name": "Lukas Weber (3)",
+    "bio": "A guide in Innsbruck who is dedicated to sustainable tourism.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 281,
+    "name": "Priya Nair (3)",
+    "bio": "A developer in Bangalore who is an advocate for tech diversity.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 282,
+    "name": "Gabriel Rossi (3)",
+    "bio": "A student in Milan who is passionate about sustainable design.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 283,
+    "name": "Elena Popescu (5)",
+    "bio": "A florist in Bucharest who is known for creative arrangements.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 284,
+    "name": "Hiroto Tanaka (3)",
+    "bio": "A civil servant in Yokohama who is interested in smart cities.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 285,
+    "name": "Sienna Williams (3)",
+    "bio": "A blogger in Melbourne who covers travel and environment.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 286,
+    "name": "Kofi Boateng (3)",
+    "bio": "A teacher in Kumasi who is dedicated to local youth education.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 287,
+    "name": "Isabella Martinez (3)",
+    "bio": "A designer in Madrid who specializes in social enterprise branding.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 288,
+    "name": "Samuel Miller (3)",
+    "bio": "A retired officer in Chicago who is active in local service.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 289,
+    "name": "Maya Singh (5)",
+    "bio": "A scientist in Delhi who is researching pollution health impacts.",
+    "initial_belief": -0.789,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 290,
+    "name": "Lukas Fischer (3)",
+    "bio": "A skier in St. Moritz who is an advocate for climate action.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 291,
+    "name": "Fatima Bakir (3)",
+    "bio": "A journalist in Tunis who covers social and political issues.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 292,
+    "name": "David Evans (3)",
+    "bio": "A geologist in Perth who is interested in earth history.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 293,
+    "name": "Elena Ivanova (3)",
+    "bio": "A student in Sofia who is active in social justice movements.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.734
+  },
+  {
+    "id": 294,
+    "name": "Julian Garcia (5)",
+    "bio": "A baker in Buenos Aires who is passionate about local food.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 295,
+    "name": "Nora Holmquist (3)",
+    "bio": "A designer in Stockholm who focuses on sustainable furniture.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 296,
+    "name": "Arjun Patel (3)",
+    "bio": "An entrepreneur in Mumbai who is building a platform for artists.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 297,
+    "name": "Sophie Dubois (3)",
+    "bio": "A historian in Paris who is an expert on the Enlightenment.",
+    "initial_belief": 0.712,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 298,
+    "name": "Mateo Rossi (3)",
+    "bio": "An architect in Milan who is passionate about urban development.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 299,
+    "name": "Amira Hassan (3)",
+    "bio": "A doctor in Alexandria who is dedicated to quality healthcare.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 300,
+    "name": "Liam Taylor (3)",
+    "bio": "A developer in Manchester who is an avid fan of local culture.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.589
+  },
+  {
+    "id": 301,
+    "name": "Elena Schmidt (3)",
+    "bio": "A retired librarian in Berlin who is an expert on literature.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 302,
+    "name": "Kenji Sato (4)",
+    "bio": "A chef in Kyoto who is dedicated to traditional cooking.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 303,
+    "name": "Sienna Rose (6)",
+    "bio": "A writer in Sydney who covers lifestyle and environment.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 304,
+    "name": "Oscar Nilsson (4)",
+    "bio": "A carpenter in Stockholm who specializes in sustainable homes.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 305,
+    "name": "Isabella Garcia (4)",
+    "bio": "A teacher in Mexico City who is passionate about education.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 306,
+    "name": "Samuel Adebayo (4)",
+    "bio": "A manager in Lagos who is an avid follower of business.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 307,
+    "name": "Maya Lin (4)",
+    "bio": "An artist in New York City whose work explores nature.",
+    "initial_belief": -0.678,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 308,
+    "name": "Lukas Müller (3)",
+    "bio": "An engineer in Munich who is passionate about renewable energy.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 309,
+    "name": "Priya Sharma (4)",
+    "bio": "A lawyer in Delhi who specializes in environmental law.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 310,
+    "name": "George Wilson (4)",
+    "bio": "A retired professor in Edinburgh who is an expert on philosophy.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 311,
+    "name": "Fatima Ahmed (4)",
+    "bio": "A developer in Nairobi who is passionate about social tech.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 312,
+    "name": "Ivan Petrov (4)",
+    "bio": "A scientist in Moscow who is interested in AI ethics.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 313,
+    "name": "Elena Varga (4)",
+    "bio": "A veterinarian in Budapest who is an animal rights advocate.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 314,
+    "name": "Arjun Singh (4)",
+    "bio": "A businessman in Mumbai who is an avid art collector.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 315,
+    "name": "Sofia Kostas (4)",
+    "bio": "A student in Athens who is active in local movements.",
+    "initial_belief": -0.543,
+    "susceptibility": 0.732
+  },
+  {
+    "id": 316,
+    "name": "Liam Brown (3)",
+    "bio": "A mechanic in Toronto who enjoys restoring classic cars.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 317,
+    "name": "Isabelle Laurent (4)",
+    "bio": "A designer in Lyon who focuses on sustainable fashion.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 318,
+    "name": "Mateo Hernandez (4)",
+    "bio": "A civil engineer in Bogota who is working on infrastructure.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 319,
+    "name": "Chloe Thompson (4)",
+    "bio": "A marketing specialist in London who is passionate about digital.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 320,
+    "name": "Hiroshi Ito (4)",
+    "bio": "A retired teacher in Tokyo who enjoys calligraphy.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 321,
+    "name": "Amira Saleh (6)",
+    "bio": "A journalist in Dubai who covers business and tech.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 322,
+    "name": "Lukas Novak (4)",
+    "bio": "An architect in Prague who is interested in reuse.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 323,
+    "name": "Nora Bakke (6)",
+    "bio": "A photographer in Oslo who captures city and nature.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 324,
+    "name": "Samuel Wright (3)",
+    "bio": "A librarian in Boston who is an expert on history.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 325,
+    "name": "Maya Singh (6)",
+    "bio": "A scientist in Bangalore who is researching agriculture.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 326,
+    "name": "Julian Garcia (6)",
+    "bio": "A musician in Buenos Aires who plays tango.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 327,
+    "name": "Elena Popescu (6)",
+    "bio": "A social worker in Bucharest who helps vulnerable people.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 328,
+    "name": "Arthur Morgan (4)",
+    "bio": "A rancher in Montana who values land management.",
+    "initial_belief": 0.867,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 329,
+    "name": "Isabella Rossi (4)",
+    "bio": "A designer in Rome who creates jewelry.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 330,
+    "name": "Kenji Yamamoto (6)",
+    "bio": "A tech entrepreneur in Tokyo who is building a platform.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 331,
+    "name": "Sienna Miller (4)",
+    "bio": "A blogger in Los Angeles who focuses on health.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 332,
+    "name": "Oscar Hernandez (4)",
+    "bio": "A firefighter in Madrid who is a safety advocate.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 333,
+    "name": "Freya Bjornson (4)",
+    "bio": "A student in Reykjavik who is passionate about energy.",
+    "initial_belief": -0.812,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 334,
+    "name": "Amir Khan (4)",
+    "bio": "A coach in London who believes in integration.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 335,
+    "name": "Evelyn Reed (4)",
+    "bio": "A writer in New York City who covers the arts.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 336,
+    "name": "Hans Schmidt (4)",
+    "bio": "A retired engineer in Frankfurt who enjoys travel.",
+    "initial_belief": 0.834,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 337,
+    "name": "Nisha Patel (4)",
+    "bio": "A nurse in Birmingham who is dedicated to care.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 338,
+    "name": "Carlos Gomez (4)",
+    "bio": "An artist in Barcelona whose work focuses on history.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 339,
+    "name": "Aiko Watanabe (4)",
+    "bio": "A craftsperson in Kyoto who specializes in pottery.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 340,
+    "name": "Benjamin Wright (4)",
+    "bio": "A lawyer in Sydney who is an accountability advocate.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 341,
+    "name": "Zara Ali (4)",
+    "bio": "A student in London who is active in campaigns.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 342,
+    "name": "Luca Moretti (4)",
+    "bio": "A chef in Florence who is passionate about food.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 343,
+    "name": "Sienna Rose (7)",
+    "bio": "A travel influencer in Gold Coast who promotes sustainability.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 344,
+    "name": "Pavel Smirnov (4)",
+    "bio": "An engineer in Moscow who is interested in tech history.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 345,
+    "name": "Elena Petrova (4)",
+    "bio": "A teacher in Saint Petersburg who is dedicated to art.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 346,
+    "name": "Jackson Lee (4)",
+    "bio": "A coach in Chicago who uses basketball for leadership.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 347,
+    "name": "Maria Rossi (4)",
+    "bio": "A baker in Rome who is known for pastries.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 348,
+    "name": "Kenji Yamamoto (7)",
+    "bio": "An artist in Tokyo who explores digital media.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.634
+  },
+  {
+    "id": 349,
+    "name": "Sara Lindholm (4)",
+    "bio": "A designer in Helsinki who focuses on objects.",
+    "initial_belief": 0.543,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 350,
+    "name": "Ahmed Mansour (4)",
+    "bio": "A public servant in Riyadh who is interested in development.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 351,
+    "name": "Olivia Smith (4)",
+    "bio": "A student in Toronto who is active in justice.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 352,
+    "name": "Thomas Müller (4)",
+    "bio": "A brewer in Munich who is passionate about beer.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 353,
+    "name": "Anjali Devi (4)",
+    "bio": "A dancer in Chennai who is dedicated to dance.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.321
+  },
+  {
+    "id": 354,
+    "name": "Liam O'Connor (4)",
+    "bio": "A developer in Dublin who is interested in tech.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 355,
+    "name": "Sofia Hernandez (4)",
+    "bio": "An organizer in San Diego who works on development.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 356,
+    "name": "Viktor Volkov (4)",
+    "bio": "A retired officer in Vladivostok who is interested in history.",
+    "initial_belief": 0.912,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 357,
+    "name": "Elena Santos (4)",
+    "bio": "A scientist in Lisbon who is researching climate.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 358,
+    "name": "Samuel Jackson (4)",
+    "bio": "A musician in New Orleans who is dedicated to jazz.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 359,
+    "name": "Mei Chen (4)",
+    "bio": "A journalist in Hong Kong who covers innovation.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 360,
+    "name": "Arthur Wilson (4)",
+    "bio": "A retired judge in London who is an expert on law.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 361,
+    "name": "Isabella Silva (4)",
+    "bio": "A photographer in São Paulo who captures culture.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 362,
+    "name": "Omar Ali (4)",
+    "bio": "A merchant in Amman who is dedicated to crafts.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 363,
+    "name": "Nora Bakke (7)",
+    "bio": "A photographer in Oslo who captures nature.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 364,
+    "name": "David Brown (4)",
+    "bio": "A driver in Ohio who is an avid listener.",
+    "initial_belief": 0.634,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 365,
+    "name": "Amira Saleh (7)",
+    "bio": "A professor in Cairo who is an expert on history.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 366,
+    "name": "Lukas Weber (4)",
+    "bio": "A guide in Innsbruck who is dedicated to sustainability.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 367,
+    "name": "Priya Nair (4)",
+    "bio": "A developer in Bangalore who is an advocate for diversity.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 368,
+    "name": "Gabriel Rossi (4)",
+    "bio": "A student in Milan who is passionate about design.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 369,
+    "name": "Elena Popescu (7)",
+    "bio": "A florist in Bucharest who is known for arrangements.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 370,
+    "name": "Hiroto Tanaka (4)",
+    "bio": "A civil servant in Yokohama who is interested in cities.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 371,
+    "name": "Sienna Williams (4)",
+    "bio": "A blogger in Melbourne who covers travel.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 372,
+    "name": "Kofi Boateng (4)",
+    "bio": "A teacher in Kumasi who is dedicated to youth.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 373,
+    "name": "Isabella Martinez (4)",
+    "bio": "A designer in Madrid who specializes in branding.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 374,
+    "name": "Samuel Miller (4)",
+    "bio": "A retired officer in Chicago who is active in service.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 375,
+    "name": "Maya Singh (7)",
+    "bio": "A scientist in Delhi who is researching pollution.",
+    "initial_belief": -0.789,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 376,
+    "name": "Lukas Fischer (4)",
+    "bio": "A skier in St. Moritz who is an advocate for climate.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 377,
+    "name": "Fatima Bakir (4)",
+    "bio": "A journalist in Tunis who covers social issues.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 378,
+    "name": "David Evans (4)",
+    "bio": "A geologist in Perth who is interested in history.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 379,
+    "name": "Elena Ivanova (4)",
+    "bio": "A student in Sofia who is active in movements.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.734
+  },
+  {
+    "id": 380,
+    "name": "Julian Garcia (7)",
+    "bio": "A baker in Buenos Aires who is passionate about food.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 381,
+    "name": "Nora Holmquist (4)",
+    "bio": "A designer in Stockholm who focuses on furniture.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 382,
+    "name": "Arjun Patel (4)",
+    "bio": "An entrepreneur in Mumbai who is building a platform.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 383,
+    "name": "Sophie Dubois (4)",
+    "bio": "A historian in Paris who is an expert on history.",
+    "initial_belief": 0.712,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 384,
+    "name": "Mateo Rossi (4)",
+    "bio": "An architect in Milan who is passionate about development.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 385,
+    "name": "Amira Hassan (4)",
+    "bio": "A doctor in Alexandria who is dedicated to healthcare.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 386,
+    "name": "Liam Taylor (4)",
+    "bio": "A developer in Manchester who is an avid fan.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.589
+  },
+  {
+    "id": 387,
+    "name": "Elena Schmidt (4)",
+    "bio": "A retired librarian in Berlin who is an expert on books.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 388,
+    "name": "Kenji Sato (5)",
+    "bio": "A chef in Kyoto who is dedicated to cooking.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 389,
+    "name": "Sienna Rose (8)",
+    "bio": "A writer in Sydney who covers lifestyle.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 390,
+    "name": "Oscar Nilsson (5)",
+    "bio": "A carpenter in Stockholm who specializes in homes.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 391,
+    "name": "Isabella Garcia (5)",
+    "bio": "A teacher in Mexico City who is passionate about education.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 392,
+    "name": "Samuel Adebayo (5)",
+    "bio": "A manager in Lagos who is an avid follower.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 393,
+    "name": "Maya Lin (5)",
+    "bio": "An artist in New York City whose work explores nature.",
+    "initial_belief": -0.678,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 394,
+    "name": "Lukas Müller (4)",
+    "bio": "An engineer in Munich who is passionate about energy.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 395,
+    "name": "Priya Sharma (5)",
+    "bio": "A lawyer in Delhi who specializes in law.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 396,
+    "name": "George Wilson (5)",
+    "bio": "A retired professor in Edinburgh who is an expert.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 397,
+    "name": "Fatima Ahmed (5)",
+    "bio": "A developer in Nairobi who is passionate about tech.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 398,
+    "name": "Ivan Petrov (5)",
+    "bio": "A scientist in Moscow who is interested in AI.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 399,
+    "name": "Elena Varga (5)",
+    "bio": "A veterinarian in Budapest who is an advocate.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 400,
+    "name": "Arjun Singh (5)",
+    "bio": "A businessman in Mumbai who is an avid collector.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 401,
+    "name": "Sofia Kostas (5)",
+    "bio": "A student in Athens who is active in movements.",
+    "initial_belief": -0.543,
+    "susceptibility": 0.732
+  },
+  {
+    "id": 402,
+    "name": "Liam Brown (4)",
+    "bio": "A mechanic in Toronto who enjoys classic cars.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 403,
+    "name": "Isabelle Laurent (5)",
+    "bio": "A designer in Lyon who focuses on fashion.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 404,
+    "name": "Mateo Hernandez (5)",
+    "bio": "A civil engineer in Bogota who is working on city projects.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 405,
+    "name": "Chloe Thompson (5)",
+    "bio": "A marketing specialist in London who is passionate about media.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 406,
+    "name": "Hiroshi Ito (5)",
+    "bio": "A retired teacher in Tokyo who enjoys history.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 407,
+    "name": "Amira Saleh (8)",
+    "bio": "A journalist in Dubai who covers tech.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 408,
+    "name": "Lukas Novak (5)",
+    "bio": "An architect in Prague who is interested in design.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 409,
+    "name": "Nora Bakke (8)",
+    "bio": "A photographer in Oslo who captures urban life.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 410,
+    "name": "Samuel Wright (4)",
+    "bio": "A librarian in Boston who is an expert on books.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 411,
+    "name": "Maya Singh (8)",
+    "bio": "A scientist in Bangalore who is researching crops.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 412,
+    "name": "Julian Garcia (8)",
+    "bio": "A musician in Buenos Aires who plays music.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 413,
+    "name": "Elena Popescu (8)",
+    "bio": "A social worker in Bucharest who helps families.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 414,
+    "name": "Arthur Morgan (5)",
+    "bio": "A rancher in Montana who values community.",
+    "initial_belief": 0.867,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 415,
+    "name": "Isabella Rossi (5)",
+    "bio": "A designer in Rome who creates art.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 416,
+    "name": "Kenji Yamamoto (8)",
+    "bio": "A tech entrepreneur in Tokyo who is building.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 417,
+    "name": "Sienna Miller (5)",
+    "bio": "A blogger in Los Angeles who focuses on life.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 418,
+    "name": "Oscar Hernandez (5)",
+    "bio": "A firefighter in Madrid who is an advocate.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 419,
+    "name": "Freya Bjornson (5)",
+    "bio": "A student in Reykjavik who is passionate about climate.",
+    "initial_belief": -0.812,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 420,
+    "name": "Amir Khan (5)",
+    "bio": "A coach in London who believes in sports.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 421,
+    "name": "Evelyn Reed (5)",
+    "bio": "A writer in New York City who covers culture.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 422,
+    "name": "Hans Schmidt (5)",
+    "bio": "A retired engineer in Frankfurt who enjoys learning.",
+    "initial_belief": 0.834,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 423,
+    "name": "Nisha Patel (5)",
+    "bio": "A nurse in Birmingham who is dedicated to patients.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 424,
+    "name": "Carlos Gomez (5)",
+    "bio": "An artist in Barcelona whose work focuses on society.",
+    "initial_belief": -0.456,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 425,
+    "name": "Aiko Watanabe (5)",
+    "bio": "A craftsperson in Kyoto who specializes in crafts.",
+    "initial_belief": 0.612,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 426,
+    "name": "Benjamin Wright (5)",
+    "bio": "A lawyer in Sydney who is an advocate.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 427,
+    "name": "Zara Ali (5)",
+    "bio": "A student in London who is active in rights.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 428,
+    "name": "Luca Moretti (5)",
+    "bio": "A chef in Florence who is passionate about cooking.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 429,
+    "name": "Sienna Rose (9)",
+    "bio": "A travel influencer in Gold Coast who promotes ethics.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 430,
+    "name": "Pavel Smirnov (5)",
+    "bio": "An engineer in Moscow who is interested in history.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 431,
+    "name": "Elena Petrova (5)",
+    "bio": "A teacher in Saint Petersburg who is dedicated.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 432,
+    "name": "Jackson Lee (5)",
+    "bio": "A coach in Chicago who uses sports for youth.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 433,
+    "name": "Maria Rossi (5)",
+    "bio": "A baker in Rome who is known for traditional food.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 434,
+    "name": "Kenji Yamamoto (9)",
+    "bio": "An artist in Tokyo who explores media.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.634
+  },
+  {
+    "id": 435,
+    "name": "Sara Lindholm (5)",
+    "bio": "A designer in Helsinki who focuses on beauty.",
+    "initial_belief": 0.543,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 436,
+    "name": "Ahmed Mansour (5)",
+    "bio": "A public servant in Riyadh who is interested in cities.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 437,
+    "name": "Olivia Smith (5)",
+    "bio": "A student in Toronto who is active in local projects.",
+    "initial_belief": -0.734,
+    "susceptibility": 0.712
+  },
+  {
+    "id": 438,
+    "name": "Thomas Müller (5)",
+    "bio": "A brewer in Munich who is passionate about brewing.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.156
+  },
+  {
+    "id": 439,
+    "name": "Anjali Devi (5)",
+    "bio": "A dancer in Chennai who is dedicated to art.",
+    "initial_belief": 0.412,
+    "susceptibility": 0.321
+  },
+  {
+    "id": 440,
+    "name": "Liam O'Connor (5)",
+    "bio": "A developer in Dublin who is interested in tech history.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 441,
+    "name": "Sofia Hernandez (5)",
+    "bio": "An organizer in San Diego who works on projects.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.489
+  },
+  {
+    "id": 442,
+    "name": "Viktor Volkov (5)",
+    "bio": "A retired officer in Vladivostok who is interested in life.",
+    "initial_belief": 0.912,
+    "susceptibility": 0.089
+  },
+  {
+    "id": 443,
+    "name": "Elena Santos (5)",
+    "bio": "A scientist in Lisbon who is researching ocean life.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 444,
+    "name": "Samuel Jackson (5)",
+    "bio": "A musician in New Orleans who is dedicated to music.",
+    "initial_belief": 0.234,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 445,
+    "name": "Mei Chen (5)",
+    "bio": "A journalist in Hong Kong who covers trends.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 446,
+    "name": "Arthur Wilson (5)",
+    "bio": "A retired judge in London who is an expert on history.",
+    "initial_belief": 0.789,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 447,
+    "name": "Isabella Silva (5)",
+    "bio": "A photographer in São Paulo who captures urban beauty.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 448,
+    "name": "Omar Ali (5)",
+    "bio": "A merchant in Amman who is dedicated to culture.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 449,
+    "name": "Nora Bakke (9)",
+    "bio": "A photographer in Oslo who captures nature and life.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 450,
+    "name": "David Brown (5)",
+    "bio": "A driver in Ohio who is an avid listener of radio.",
+    "initial_belief": 0.634,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 451,
+    "name": "Amira Saleh (9)",
+    "bio": "A professor in Cairo who is an expert on culture.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 452,
+    "name": "Lukas Weber (5)",
+    "bio": "A guide in Innsbruck who is dedicated to tourism.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 453,
+    "name": "Priya Nair (5)",
+    "bio": "A developer in Bangalore who is an advocate for tech.",
+    "initial_belief": 0.123,
+    "susceptibility": 0.567
+  },
+  {
+    "id": 454,
+    "name": "Gabriel Rossi (5)",
+    "bio": "A student in Milan who is passionate about urban life.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.745
+  },
+  {
+    "id": 455,
+    "name": "Elena Popescu (9)",
+    "bio": "A florist in Bucharest who is known for art.",
+    "initial_belief": 0.512,
+    "susceptibility": 0.389
+  },
+  {
+    "id": 456,
+    "name": "Hiroto Tanaka (5)",
+    "bio": "A civil servant in Yokohama who is interested in safety.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.212
+  },
+  {
+    "id": 457,
+    "name": "Sienna Williams (5)",
+    "bio": "A blogger in Melbourne who covers lifestyle.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.812
+  },
+  {
+    "id": 458,
+    "name": "Kofi Boateng (5)",
+    "bio": "A teacher in Kumasi who is dedicated to learning.",
+    "initial_belief": 0.678,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 459,
+    "name": "Isabella Martinez (5)",
+    "bio": "A designer in Madrid who specializes in art.",
+    "initial_belief": -0.412,
+    "susceptibility": 0.456
+  },
+  {
+    "id": 460,
+    "name": "Samuel Miller (5)",
+    "bio": "A retired officer in Chicago who is active in projects.",
+    "initial_belief": 0.845,
+    "susceptibility": 0.145
+  },
+  {
+    "id": 461,
+    "name": "Maya Singh (9)",
+    "bio": "A scientist in Delhi who is researching health.",
+    "initial_belief": -0.789,
+    "susceptibility": 0.189
+  },
+  {
+    "id": 462,
+    "name": "Lukas Fischer (5)",
+    "bio": "A skier in St. Moritz who is an advocate for nature.",
+    "initial_belief": -0.345,
+    "susceptibility": 0.512
+  },
+  {
+    "id": 463,
+    "name": "Fatima Bakir (5)",
+    "bio": "A journalist in Tunis who covers social trends.",
+    "initial_belief": -0.123,
+    "susceptibility": 0.612
+  },
+  {
+    "id": 464,
+    "name": "David Evans (5)",
+    "bio": "A geologist in Perth who is interested in the earth.",
+    "initial_belief": 0.432,
+    "susceptibility": 0.345
+  },
+  {
+    "id": 465,
+    "name": "Elena Ivanova (5)",
+    "bio": "A student in Sofia who is active in campaigns.",
+    "initial_belief": 0.156,
+    "susceptibility": 0.734
+  },
+  {
+    "id": 466,
+    "name": "Julian Garcia (9)",
+    "bio": "A baker in Buenos Aires who is passionate about bread.",
+    "initial_belief": 0.589,
+    "susceptibility": 0.267
+  },
+  {
+    "id": 467,
+    "name": "Nora Holmquist (5)",
+    "bio": "A designer in Stockholm who focuses on sustainability.",
+    "initial_belief": 0.312,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 468,
+    "name": "Arjun Patel (5)",
+    "bio": "An entrepreneur in Mumbai who is building a tech site.",
+    "initial_belief": -0.234,
+    "susceptibility": 0.543
+  },
+  {
+    "id": 469,
+    "name": "Sophie Dubois (5)",
+    "bio": "A historian in Paris who is an expert on culture.",
+    "initial_belief": 0.712,
+    "susceptibility": 0.134
+  },
+  {
+    "id": 470,
+    "name": "Mateo Rossi (5)",
+    "bio": "An architect in Milan who is passionate about greening.",
+    "initial_belief": -0.567,
+    "susceptibility": 0.412
+  },
+  {
+    "id": 471,
+    "name": "Amira Hassan (5)",
+    "bio": "A doctor in Alexandria who is dedicated to patients.",
+    "initial_belief": 0.345,
+    "susceptibility": 0.312
+  },
+  {
+    "id": 472,
+    "name": "Liam Taylor (5)",
+    "bio": "A developer in Manchester who is an avid fan of music.",
+    "initial_belief": -0.156,
+    "susceptibility": 0.589
+  },
+  {
+    "id": 473,
+    "name": "Elena Schmidt (5)",
+    "bio": "A retired librarian in Berlin who is an expert on history.",
+    "initial_belief": 0.812,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 474,
+    "name": "Kenji Sato (6)",
+    "bio": "A chef in Kyoto who is dedicated to traditional food.",
+    "initial_belief": 0.456,
+    "susceptibility": 0.234
+  },
+  {
+    "id": 475,
+    "name": "Sienna Rose (10)",
+    "bio": "A writer in Sydney who covers environment.",
+    "initial_belief": -0.312,
+    "susceptibility": 0.678
+  },
+  {
+    "id": 476,
+    "name": "Oscar Nilsson (6)",
+    "bio": "A carpenter in Stockholm who specializes in wood.",
+    "initial_belief": 0.567,
+    "susceptibility": 0.289
+  },
+  {
+    "id": 477,
+    "name": "Link",
+    "bio": "A highly trained Hyrulian knight who is tasked with protecting the kingdom from evil.",
+    "initial_belief": 0.0,
+    "susceptibility": 0.164
+  },
+  {
+    "id": 478,
+    "name": "Kratos",
+    "bio": "A hardened Spartan warrior and relentless fighter shaped by war and gods.",
+    "initial_belief": -0.612,
+    "susceptibility": 0.118
+  },
+  {
+    "id": 479,
+    "name": "David Martinez",
+    "bio": "A street kid from Night City pulled into high-risk mercenary life and cyberware.",
+    "initial_belief": -0.184,
+    "susceptibility": 0.731
+  },
+  {
+    "id": 480,
+    "name": "Ash Ketchum",
+    "bio": "A determined young trainer who travels widely, forms bonds, and competes fairly.",
+    "initial_belief": 0.664,
+    "susceptibility": 0.402
+  },
+  {
+    "id": 481,
+    "name": "Steve",
+    "bio": "A resourceful builder and miner who survives by crafting tools and exploring caves.",
+    "initial_belief": 0.093,
+    "susceptibility": 0.557
+  },
+  {
+    "id": 482,
+    "name": "Luigi",
+    "bio": "A kind-hearted hero who faces fear to protect others, often in his brother's shadow.",
+    "initial_belief": 0.438,
+    "susceptibility": 0.496
+  },
+  {
+    "id": 483,
+    "name": "Leon Kennedy",
+    "bio": "A government agent trained to stay calm under pressure and handle outbreaks.",
+    "initial_belief": 0.212,
+    "susceptibility": 0.241
+  },
+  {
+    "id": 484,
+    "name": "Solid Snake",
+    "bio": "A stealth operative who distrusts institutions and focuses on mission reality.",
+    "initial_belief": -0.327,
+    "susceptibility": 0.149
+  },
+  {
+    "id": 485,
+    "name": "Winston",
+    "bio": "A thoughtful scientist and protector who balances curiosity with responsibility.",
+    "initial_belief": 0.571,
+    "susceptibility": 0.354
+  },
+  {
+    "id": 486,
+    "name": "Lara Croft",
+    "bio": "An archaeologist-adventurer who pursues ancient secrets with grit and precision.",
+    "initial_belief": 0.301,
+    "susceptibility": 0.286
+  },
+  {
+    "id": 487,
+    "name": "Kazuma Kiryu",
+    "bio": "A disciplined former yakuza who values honor and protects his community.",
+    "initial_belief": 0.487,
+    "susceptibility": 0.197
+  },
+  {
+    "id": 488,
+    "name": "John Marston",
+    "bio": "A rugged gunslinger seeking redemption while resisting a changing frontier.",
+    "initial_belief": -0.056,
+    "susceptibility": 0.333
+  },
+  {
+    "id": 489,
+    "name": "Geralt",
+    "bio": "A monster hunter guided by practicality and a strict personal code.",
+    "initial_belief": -0.141,
+    "susceptibility": 0.176
+  },
+  {
+    "id": 490,
+    "name": "Yujiro Hanma",
+    "bio": "An overwhelmingly strong fighter who dominates opponents through sheer force.",
+    "initial_belief": -0.874,
+    "susceptibility": 0.064
+  },
+  {
+    "id": 491,
+    "name": "Vegeta",
+    "bio": "A proud warrior prince driven by rivalry, discipline, and the will to surpass limits.",
+    "initial_belief": 0.294,
+    "susceptibility": 0.163
+  },
+  {
+    "id": 492,
+    "name": "Genghis Khan",
+    "bio": "A formidable conqueror and strategist who unites factions through decisive rule.",
+    "initial_belief": -0.521,
+    "susceptibility": 0.259
+  },
+  {
+    "id": 493,
+    "name": "Jeremy Clarkson",
+    "bio": "A loud, opinionated presenter who values spectacle, speed, and sharp banter.",
+    "initial_belief": 0.118,
+    "susceptibility": 0.112
+  },
+  {
+    "id": 494,
+    "name": "James May",
+    "bio": "A careful presenter who prefers details, patience, and measured conclusions.",
+    "initial_belief": 0.377,
+    "susceptibility": 0.281
+  },
+  {
+    "id": 495,
+    "name": "Richard Hammond",
+    "bio": "An enthusiastic presenter who balances risk-taking with a friendly, curious streak.",
+    "initial_belief": -0.244,
+    "susceptibility": 0.468
+  },
+  {
+    "id": 496,
+    "name": "Walter White",
+    "bio": "A chemistry teacher who becomes a calculating criminal under mounting pressure.",
+    "initial_belief": -0.703,
+    "susceptibility": 0.222
+  },
+  {
+    "id": 497,
+    "name": "Saul Goodman",
+    "bio": "A charismatic lawyer who bends rules, sells narratives, and finds loopholes fast.",
+    "initial_belief": -0.112,
+    "susceptibility": 0.689
+  },
+  {
+    "id": 498,
+    "name": "Anakin Skywalker",
+    "bio": "A gifted but volatile Jedi whose fear of loss shapes hard choices.",
+    "initial_belief": -0.458,
+    "susceptibility": 0.717
+  },
+  {
+    "id": 499,
+    "name": "Elon Musk",
+    "bio": "A high-profile tech executive known for ambitious projects and polarizing claims.",
+    "initial_belief": 0.652,
+    "susceptibility": 0.438
+  }
+]
