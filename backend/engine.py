@@ -29,6 +29,16 @@ from typing import Optional
 import networkx as nx
 import numpy as np
 
+from backend.config import SimulationConfig
+from backend.dynamics import (
+    compatibility,
+    compute_distances,
+    effective_weights,
+    exposure_mask,
+    phi_repulsive,
+    safe_row_normalize,
+)
+
 # Esteban-Ray constants
 _RHO: float = 1.3   # polarization sensitivity (literature standard)
 _K_ER: float = 1.0  # scale constant
@@ -40,6 +50,12 @@ class SimState:
     beliefs: np.ndarray      # shape (N,), values ∈ [-1, 1]
     polarization: float      # Esteban-Ray index ≥ 0
     echo_coefficient: float  # ∈ [0, 1]
+    # Optional auxiliary diagnostics populated by step_with_config().
+    # Legacy step() leaves them None to preserve the existing payload shape.
+    mean_pairwise_distance: Optional[float] = None
+    frac_no_compatible: Optional[float] = None
+    mean_exposure_similarity: Optional[float] = None
+    active_exposures: Optional[int] = None
 
 
 class SimulationEngine:
@@ -98,6 +114,12 @@ class SimulationEngine:
         self._sigma: np.ndarray = np.array(
             [a["susceptibility"] for a in self._agents], dtype=np.float64
         )
+        # Activity is an optional per-agent trait used by the new exposure
+        # layer (top_k / sampled). Defaults to 1.0 if absent in the JSON so
+        # legacy agent files continue to work unchanged.
+        self._activity: np.ndarray = np.array(
+            [float(a.get("activity", 1.0)) for a in self._agents], dtype=np.float64
+        )
 
         # Mutable state
         self._B: np.ndarray = self._B0.copy()
@@ -106,6 +128,10 @@ class SimulationEngine:
         # Cached from the most recent step() call (used by get_metrics)
         self._last_F: np.ndarray = np.zeros((self.N, self.N))
 
+        # Dedicated RNG for stochastic exposure / noise. Re-seeded on reset()
+        # so two engines with the same seed produce identical trajectories.
+        self._rng: np.random.Generator = np.random.default_rng(seed)
+
     # ── Public API ──────────────────────────────────────────────────────
 
     def reset(self) -> None:
@@ -113,6 +139,7 @@ class SimulationEngine:
         self._B = self._B0.copy()
         self._current_step = 0
         self._last_F = np.zeros((self.N, self.N))
+        self._rng = np.random.default_rng(self._seed)
 
     def step(self, alpha: float, beta: float, epsilon: float) -> SimState:
         """
@@ -168,6 +195,232 @@ class SimulationEngine:
             polarization=pol,
             echo_coefficient=echo,
         )
+
+    # ── New modular dynamics path ───────────────────────────────────────
+    #
+    # Math summary (full derivations live in `dynamics.py`):
+    #
+    #   Baseline DeGroot:
+    #       x(t+1) = (I - S) x(t) + S Ŵ(t) x(t)
+    #       Ŵ(t)   = row-normalize( A · M(t) )
+    #
+    #   Confirmation bias:
+    #       Ŵ(t)   ∝ A · exp(-α · |x_i - x_j|) · M(t)
+    #
+    #   Bounded confidence:
+    #       Ŵ(t)   ∝ A · 1[|x_i - x_j| ≤ ε] · M(t)
+    #
+    #   Repulsive bounded confidence (incremental form):
+    #       x_i(t+1) = x_i(t) + s_i Σ_j Ŵ_{ij}(t) · φ_i(x_j - x_i)
+    #
+    # The follow graph A is static in all four modes. The exposure layer M(t)
+    # picks which followed accounts are visible this tick, so the *effective*
+    # influence network is dynamic even though the substrate is not.
+
+    def step_with_config(self, config: SimulationConfig) -> SimState:
+        """
+        Advance one tick using the modular config-driven dynamics.
+
+        Honours `config.model_type` (degroot, confirmation_bias,
+        bounded_confidence, repulsive_bc) and `config.exposure_mode`
+        (all_followed, top_k, sampled). Falls back to noise-free, no-clip
+        behaviour if those flags are off.
+        """
+        B = self._B
+        dist = compute_distances(B)
+        A = self._A
+
+        # ── Per-agent thresholds with optional overrides ──────────────
+        # Future-proofing: per-agent overrides resolve from the agent dict
+        # first, then config.per_agent_overrides, then the global default.
+        # Today the homogeneous global path is the fast common case.
+        eps = self._resolve_per_agent(config, "confidence_epsilon")
+        alpha_decay = self._resolve_per_agent(config, "distance_decay_alpha")
+        beta_sel = self._resolve_per_agent(config, "selective_exposure_beta")
+        rho = self._resolve_per_agent(config, "repulsion_threshold_rho")
+        gamma = self._resolve_per_agent(config, "repulsion_strength_gamma")
+
+        # ── Layer 1: exposure mask M(t) over the static follow graph ──
+        M = exposure_mask(
+            config.exposure_mode,
+            A,
+            dist,
+            activity=self._activity,
+            selective_beta=beta_sel,
+            top_k=config.top_k_visible,
+            rng=self._rng,
+        )
+
+        # ── Layer 2: compatibility C(t) ──────────────────────────────
+        C = compatibility(
+            config.model_type,
+            dist,
+            alpha_decay=alpha_decay,
+            epsilon=eps,
+        )
+
+        # Baseline edge weight for the new framework is the raw graph edge.
+        # The legacy step() retains the platform-curation weighting; the new
+        # path keeps the substrate clean so the four modes are directly
+        # comparable.
+        W_base = A
+        T = None  # config.trust_enabled is reserved for a future feature.
+
+        if config.model_type == "repulsive_bc":
+            W_hat = self._repulsive_weights(A, W_base, M, T)
+            new_B = self._update_repulsive(B, W_hat, dist, eps, rho, gamma, config)
+        else:
+            W_hat = effective_weights(A, W_base, M, C, T=T)
+            new_B = self._update_matrix_form(B, W_hat, config)
+
+        if config.clip_beliefs:
+            new_B = np.clip(new_B, -1.0, 1.0)
+
+        self._B = new_B
+        self._current_step += 1
+        # Cache an F-shaped object so get_metrics()/echo coefficient still
+        # have something meaningful to work with after a config-driven step.
+        self._last_F = W_hat
+
+        # ── Diagnostics ───────────────────────────────────────────────
+        # Echo / Esteban-Ray are computed exactly as before so the primary
+        # metrics remain comparable across modes.
+        new_dist = compute_distances(new_B)
+        pol, echo = self._compute_metrics(W_hat, new_dist)
+        diagnostics = self._compute_diagnostics(W_hat, new_dist, M)
+
+        return SimState(
+            step=self._current_step,
+            beliefs=self._B.copy(),
+            polarization=pol,
+            echo_coefficient=echo,
+            mean_pairwise_distance=diagnostics["mean_pairwise_distance"],
+            frac_no_compatible=diagnostics["frac_no_compatible"],
+            mean_exposure_similarity=diagnostics["mean_exposure_similarity"],
+            active_exposures=diagnostics["active_exposures"],
+        )
+
+    # ── Modular update sub-routines ─────────────────────────────────────
+
+    def _update_matrix_form(
+        self,
+        B: np.ndarray,
+        W_hat: np.ndarray,
+        config: SimulationConfig,
+    ) -> np.ndarray:
+        """
+        Standard DeGroot-style update using a per-tick row-stochastic Ŵ.
+
+            x_i(t+1) = x_i(t) + s_i · Σ_j Ŵ_{ij} · (x_j - x_i) + ξ_i
+
+        Rows of Ŵ that are all-zero (no compatible visible neighbour) freeze
+        the agent at its current belief, which avoids divide-by-zero NaNs.
+        """
+        wstar_row_sum = W_hat.sum(axis=1)
+        delta = self._sigma * (W_hat @ B - B * wstar_row_sum)
+        new_B = B + delta
+        if config.noise_sigma > 0:
+            new_B = new_B + self._rng.normal(0.0, config.noise_sigma, size=B.shape)
+        return new_B
+
+    def _repulsive_weights(
+        self,
+        A: np.ndarray,
+        W_base: np.ndarray,
+        M: np.ndarray,
+        T: Optional[np.ndarray],
+    ) -> np.ndarray:
+        """
+        For repulsive_bc we do *not* apply a compatibility filter when
+        normalising — the φ piecewise function handles attract / ignore /
+        repel internally. We row-normalise over visible followed neighbours
+        so the total interaction strength stays bounded regardless of how
+        many extreme-distant neighbours are in view.
+        """
+        u = A * W_base * M
+        if T is not None:
+            u = u * T
+        return safe_row_normalize(u)
+
+    def _update_repulsive(
+        self,
+        B: np.ndarray,
+        W_hat: np.ndarray,
+        dist: np.ndarray,
+        eps: np.ndarray | float,
+        rho: np.ndarray | float,
+        gamma: np.ndarray | float,
+        config: SimulationConfig,
+    ) -> np.ndarray:
+        """
+        Incremental update for the repulsive bounded-confidence model:
+
+            x_i(t+1) = x_i(t) + s_i · Σ_j Ŵ_{ij}(t) · φ_i(x_j - x_i) + ξ_i
+
+        A convex weighted average cannot encode negative influence, so we
+        sum φ(Δ) per-edge and weight by Ŵ — visible-followed-only.
+        """
+        delta_mat = B[None, :] - B[:, None]               # Δ_{ij} = x_j - x_i
+        phi = phi_repulsive(delta_mat, epsilon=eps, rho=rho, gamma=gamma)
+        update = self._sigma * (W_hat * phi).sum(axis=1)
+        new_B = B + update
+        if config.noise_sigma > 0:
+            new_B = new_B + self._rng.normal(0.0, config.noise_sigma, size=B.shape)
+        return new_B
+
+    def _resolve_per_agent(
+        self, config: SimulationConfig, field_name: str
+    ) -> np.ndarray:
+        """
+        Build a length-N vector for a parameter, allowing per-agent overrides.
+
+        Resolution order per agent:
+            1. agent dict has the field directly,
+            2. config.per_agent_overrides[i][field_name],
+            3. global config default.
+        """
+        default = float(getattr(config, field_name))
+        out = np.full(self.N, default, dtype=np.float64)
+        for i, agent in enumerate(self._agents):
+            if field_name in agent:
+                out[i] = float(agent[field_name])
+                continue
+            override = config.per_agent_overrides.get(i)
+            if override and field_name in override:
+                out[i] = float(override[field_name])
+        return out
+
+    def _compute_diagnostics(
+        self,
+        W_hat: np.ndarray,
+        dist: np.ndarray,
+        M: np.ndarray,
+    ) -> dict:
+        """Auxiliary metrics for the modular path."""
+        # Off-diagonal distances only (skip self-pairs).
+        N = self.N
+        if N > 1:
+            mask = ~np.eye(N, dtype=bool)
+            mean_pair = float(dist[mask].mean())
+        else:
+            mean_pair = 0.0
+
+        row_sums = W_hat.sum(axis=1)
+        frac_no_comp = float((row_sums == 0).mean())
+
+        # Average distance over visible (non-zero exposure) edges.
+        active_count = int((M > 0).sum())
+        if active_count > 0:
+            mean_exp_sim = float(1.0 - (dist * (M > 0)).sum() / active_count)
+        else:
+            mean_exp_sim = 0.0
+
+        return {
+            "mean_pairwise_distance": mean_pair,
+            "frac_no_compatible": frac_no_comp,
+            "mean_exposure_similarity": mean_exp_sim,
+            "active_exposures": active_count,
+        }
 
     def get_metrics(self) -> dict:
         """
