@@ -10,7 +10,7 @@
 ### Install dependencies
 
 ```bash
-.venv/bin/pip install pytest httpx scipy fastapi uvicorn networkx numpy
+pip install -r requirements.txt
 ```
 
 ### Run tests
