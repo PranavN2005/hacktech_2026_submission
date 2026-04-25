@@ -54,6 +54,9 @@ export interface SimulationState {
   isLoading: boolean;
   error: string | null;
   initVersion: number;
+  // Increments every time the user resets — consumers (e.g. NetworkGraph)
+  // subscribe to this to trigger a layout re-fit without rebuilding state.
+  resetVersion: number;
   currentStep: number;
   totalSteps: number;
   agentQuantity: number;
@@ -93,6 +96,7 @@ const initialState: SimulationState = {
   isLoading: false,
   error: null,
   initVersion: 0,
+  resetVersion: 0,
   currentStep: 0,
   totalSteps: 100,
   agentQuantity: 500,
@@ -227,6 +231,7 @@ function createSimStore() {
         currentStep: 0,
         beliefs: state.agents.map(a => a.initial_belief),
         metricsHistory: [],
+        resetVersion: state.resetVersion + 1,
       }));
     },
 

@@ -10,6 +10,7 @@
   let isStabilized = false;
   let isInitializing = false;
   let lastRenderedStep = 0;
+  let lastSeenResetVersion = 0;
   const RENDER_INTERVAL = 1; // Update visuals every step (cheap with batched DataSet.update)
 
   // Convert belief (-1 to 1) to color - matches histogram gradient
@@ -54,7 +55,7 @@
         id: agent.id,
         color: {
           background: color,
-          border: 'rgba(255,255,255,0.5)',
+          border: 'rgba(255,255,255,0.15)',
           highlight: { background: color, border: '#ffffff' },
           hover: { background: color, border: '#ffffff' }
         },
@@ -104,24 +105,24 @@
       },
       physics: {
         enabled: true,
-        solver: 'barnesHut',
-        barnesHut: {
-          gravitationalConstant: -3000,
-          centralGravity: 0.4,
-          springLength: 120,
-          springConstant: 0.06,
-          damping: 0.15,
-          avoidOverlap: 0.3
+        solver: 'forceAtlas2Based',
+        forceAtlas2Based: {
+          gravitationalConstant: -50,
+          centralGravity: 0.005,
+          springLength: 90,
+          springConstant: 0.18,
+          damping: 0.6,
+          avoidOverlap: 1
         },
         stabilization: {
           enabled: true,
-          iterations: 200,
-          updateInterval: 25,
+          iterations: 400,
+          updateInterval: 50,
           fit: true
         },
-        maxVelocity: 80,
-        minVelocity: 0.1,
-        timestep: 0.5
+        maxVelocity: 30,
+        minVelocity: 0.2,
+        timestep: 0.4
       },
       interaction: {
         hover: true,
@@ -181,7 +182,7 @@
         id: agent.id,
         color: {
           background: color,
-          border: 'rgba(255,255,255,0.5)',
+          border: 'rgba(255,255,255,0.15)',
           highlight: { background: color, border: '#ffffff' },
           hover: { background: color, border: '#ffffff' }
         },
@@ -211,6 +212,13 @@
   $: if ($simStore.currentStep === 0 && $simStore.beliefs.length > 0 && network && isStabilized) {
     lastRenderedStep = 0;
     updateBeliefs($simStore.beliefs, $simStore.agents);
+  }
+
+  // Re-fit the network whenever the user resets (subscribes to resetVersion).
+  // Any user-dragged node positions remain — fit() only re-frames the camera.
+  $: if (network && isStabilized && $simStore.resetVersion !== lastSeenResetVersion) {
+    lastSeenResetVersion = $simStore.resetVersion;
+    network.fit({ animation: { duration: 400, easingFunction: 'easeInOutQuad' } });
   }
 
   onDestroy(() => {
@@ -262,9 +270,13 @@
     width: 100%;
     height: 100%;
     min-height: 400px;
-    background: linear-gradient(135deg, #0a0c10 0%, #111318 100%);
+    background:
+      radial-gradient(ellipse at center, #0e1117 0%, #06080b 70%, #020305 100%),
+      linear-gradient(135deg, #0a0c10 0%, #111318 100%);
+    background-blend-mode: screen;
     border-radius: 8px;
     overflow: hidden;
+    box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.6);
   }
 
   .network-graph {
@@ -343,7 +355,7 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
-    background: linear-gradient(135deg, #0a0c10 0%, #111318 100%);
+    background: radial-gradient(ellipse at center, #0e1117 0%, #06080b 70%, #020305 100%);
     color: rgba(255, 255, 255, 0.6);
     font-size: 14px;
   }
