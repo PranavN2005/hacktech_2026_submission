@@ -10,7 +10,7 @@
   let isStabilized = false;
   let isInitializing = false;
   let lastRenderedStep = 0;
-  const RENDER_INTERVAL = 2; // Update visuals every 2-3 steps
+  const RENDER_INTERVAL = 1; // Update visuals every step (cheap with batched DataSet.update)
 
   // Convert belief (-1 to 1) to color - matches histogram gradient
   function beliefToColor(belief: number): string {
@@ -68,7 +68,7 @@
       id: i,
       from: edge.from,
       to: edge.to,
-      arrows: { to: { enabled: false } },
+      arrows: { to: { enabled: true, scaleFactor: 0.35, type: 'arrow' } },
       color: {
         color: 'rgba(147, 157, 177, 0.2)',
         highlight: '#60a5fa',
