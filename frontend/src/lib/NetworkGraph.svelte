@@ -13,21 +13,25 @@
   let lastSeenResetVersion = 0;
   const RENDER_INTERVAL = 1; // Update visuals every step (cheap with batched DataSet.update)
 
-  // Convert belief (-1 to 1) to color - matches histogram gradient
+  // Convert belief (-1 to 1) to color.
+  // Canonical 3-stop gradient (matches BeliefHistogram + legend bar exactly):
+  //   -1: #3b82f6  (blue   rgb(59,130,246))
+  //    0: #a855f7  (purple rgb(168,85,247))
+  //   +1: #ef4444  (red    rgb(239,68,68))
   function beliefToColor(belief: number): string {
-    // Blue (-1) -> Purple (0) -> Red (+1)
-    if (belief <= 0) {
-      const t = (belief + 1); // 0 to 1 as belief goes from -1 to 0
-      const r = Math.round(59 + (168 - 59) * t);
-      const g = Math.round(130 + (85 - 130) * t);
-      const b = Math.round(247 + (85 - 247) * t);
-      return `rgb(${r}, ${g}, ${b})`;
+    const b = Math.max(-1, Math.min(1, belief));
+    if (b <= 0) {
+      const t = b + 1; // 0..1 as belief goes -1 -> 0
+      const R = Math.round(59  + (168 - 59)  * t);
+      const G = Math.round(130 + (85  - 130) * t);
+      const B = Math.round(246 + (247 - 246) * t);
+      return `rgb(${R}, ${G}, ${B})`;
     } else {
-      const t = belief; // 0 to 1 as belief goes from 0 to 1
-      const r = Math.round(168 + (239 - 168) * t);
-      const g = Math.round(85 + (68 - 85) * t);
-      const b = Math.round(85 + (68 - 85) * t);
-      return `rgb(${r}, ${g}, ${b})`;
+      const t = b; // 0..1 as belief goes 0 -> +1
+      const R = Math.round(168 + (239 - 168) * t);
+      const G = Math.round(85  + (68  - 85)  * t);
+      const B = Math.round(247 + (68  - 247) * t);
+      return `rgb(${R}, ${G}, ${B})`;
     }
   }
 
