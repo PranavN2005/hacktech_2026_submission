@@ -17,10 +17,11 @@ export interface InitPayload {
 
 const API_BASE = '/api';
 
-export async function fetchInit(agentQuantity?: number): Promise<InitPayload> {
-  const query = typeof agentQuantity === 'number'
-    ? `?${new URLSearchParams({ agent_quantity: String(agentQuantity) }).toString()}`
-    : '';
+export async function fetchInit(agentQuantity?: number, seed?: number): Promise<InitPayload> {
+  const qs: Record<string, string> = {};
+  if (typeof agentQuantity === 'number') qs.agent_quantity = String(agentQuantity);
+  if (typeof seed === 'number' && Number.isFinite(seed)) qs.seed = String(Math.trunc(seed));
+  const query = Object.keys(qs).length > 0 ? `?${new URLSearchParams(qs).toString()}` : '';
   const response = await fetch(`${API_BASE}/init${query}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch /init (${response.status} ${response.statusText})`);

@@ -84,7 +84,7 @@ const defaultParams: SimParams = {
   beta: 0.2,
   epsilon: 0.4,
   steps: 100,
-  interval: 0.3,
+  interval: 0.05,
 };
 
 const defaultDynamics: DynamicsConfig = {

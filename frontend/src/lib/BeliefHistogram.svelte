@@ -99,20 +99,27 @@
     }
   });
 
-  // Compute bimodality indicator
+  // Sarle's Bimodality Coefficient: BC = (skewness² + 1) / kurtosis
+  // Threshold: BC > 5/9 ≈ 0.556 indicates bimodal tendency.
+  // A single cluster (low variance) correctly returns 0; a perfect half-at-±1
+  // split returns 1.0; a normal distribution returns ~0.333.
   $: bimodality = (() => {
     const beliefs = $simStore.beliefs;
-    if (beliefs.length === 0) return 0;
-    
-    const leftCount = beliefs.filter(b => b < -0.3).length;
-    const rightCount = beliefs.filter(b => b > 0.3).length;
-    const centerCount = beliefs.filter(b => b >= -0.3 && b <= 0.3).length;
-    
-    // Simple bimodality score: high when edges are populated, center is empty
-    const edgeRatio = (leftCount + rightCount) / beliefs.length;
-    const centerRatio = centerCount / beliefs.length;
-    
-    return Math.max(0, edgeRatio - centerRatio);
+    const n = beliefs.length;
+    if (n < 3) return 0;
+
+    const mean = beliefs.reduce((s, b) => s + b, 0) / n;
+    const m2 = beliefs.reduce((s, b) => s + (b - mean) ** 2, 0) / n;
+    if (m2 === 0) return 0; // constant distribution → unimodal
+
+    const m3 = beliefs.reduce((s, b) => s + (b - mean) ** 3, 0) / n;
+    const m4 = beliefs.reduce((s, b) => s + (b - mean) ** 4, 0) / n;
+
+    const skewness = m3 / m2 ** 1.5;
+    const kurtosis = m4 / m2 ** 2; // Pearson kurtosis (not excess)
+
+    if (kurtosis === 0) return 0;
+    return Math.min(1, (skewness ** 2 + 1) / kurtosis);
   })();
 </script>
 
@@ -128,7 +135,7 @@
       >
         i
         <span class="tooltip-content">
-          Bimodality indicator = max(0, edge belief share - center share). Higher values mean beliefs split into two opposing camps.
+          Sarle's Bimodality Coefficient = (skewness² + 1) / kurtosis. Values above 0.556 indicate a bimodal split. Perfect two-camp split ≈ 1.0; single consensus cluster ≈ 0; normal spread ≈ 0.33.
         </span>
       </button>
     </div>

@@ -10,7 +10,9 @@
   let beta        = $simStore.params.beta;
   let epsilon     = $simStore.params.epsilon;
   let steps       = $simStore.params.steps;
+  let interval    = $simStore.params.interval;
   let agentQuantity = $simStore.agentQuantity || 500;
+  let seedInput: string = '';
 
   let modelType         = $simStore.dynamics.model_type;
   let exposureMode      = $simStore.dynamics.exposure_mode;
@@ -26,6 +28,7 @@
   $: beta          = $simStore.params.beta;
   $: epsilon       = $simStore.params.epsilon;
   $: steps         = $simStore.params.steps;
+  $: interval      = $simStore.params.interval;
   $: agentQuantity = $simStore.agentQuantity || 500;
   $: modelType     = $simStore.dynamics.model_type;
   $: exposureMode  = $simStore.dynamics.exposure_mode;
@@ -105,18 +108,40 @@
     simStore.reset();
   }
 
+  function parsedSeed(): number | undefined {
+    const trimmed = seedInput.trim();
+    if (trimmed === '') return undefined;
+    const n = parseInt(trimmed, 10);
+    return Number.isFinite(n) ? n : undefined;
+  }
+
   async function applyAgentQuantity() {
     const clamped = Math.max(1, Math.min(500, Math.round(agentQuantity)));
-    if (clamped === $simStore.agentQuantity) return;
     stopSimulation();
     simStore.setLoading(true);
     simStore.setError(null);
     try {
-      const data = await fetchInit(clamped);
+      const data = await fetchInit(clamped, parsedSeed());
       simStore.initialize(data);
     } catch (err) {
       console.error('Failed to refresh init data:', err);
       simStore.setError('Failed to reload graph with requested agent count.');
+    }
+  }
+
+  async function randomizeSeed() {
+    const newSeed = Math.floor(Math.random() * 1_000_000);
+    seedInput = String(newSeed);
+    const clamped = Math.max(1, Math.min(500, Math.round(agentQuantity)));
+    stopSimulation();
+    simStore.setLoading(true);
+    simStore.setError(null);
+    try {
+      const data = await fetchInit(clamped, newSeed);
+      simStore.initialize(data);
+    } catch (err) {
+      console.error('Failed to randomize graph seed:', err);
+      simStore.setError('Failed to rebuild graph with new seed.');
     }
   }
 
@@ -259,7 +284,22 @@
         <p class="parameter-description">Timesteps per run.</p>
       </div>
 
-      <!-- Agent Count -->
+      <!-- Step Interval -->
+      <div class="parameter">
+        <div class="parameter-header">
+          <label class="parameter-label" for="interval">Step Interval</label>
+          <span class="parameter-value">
+            {interval === 0 ? 'max speed' : `${interval.toFixed(2)}s`}
+          </span>
+        </div>
+        <input type="range" id="interval" min="0" max="1" step="0.01"
+          bind:value={interval}
+          on:input={() => simStore.setParams({ interval })}
+          disabled={$simStore.isPlaying} />
+        <p class="parameter-description">Delay between steps. Set to 0 for maximum speed.</p>
+      </div>
+
+      <!-- Agent Count + Graph Seed — shared Apply button -->
       <div class="parameter">
         <div class="parameter-header">
           <label class="parameter-label" for="agentQuantity">Agent Count</label>
@@ -269,11 +309,38 @@
           <input id="agentQuantity" class="parameter-input" type="number"
             min="1" max="500" step="1" bind:value={agentQuantity}
             disabled={$simStore.isPlaying} />
+        </div>
+      </div>
+
+      <div class="parameter">
+        <div class="parameter-header">
+          <label class="parameter-label" for="graphSeed">Graph Seed</label>
+          <span class="parameter-value">{seedInput || 'random'}</span>
+        </div>
+        <div class="transport-controls">
+          <input id="graphSeed" class="parameter-input" type="text" inputmode="numeric"
+            pattern="[0-9]*" placeholder="Random"
+            bind:value={seedInput}
+            disabled={$simStore.isPlaying} />
+          <button class="btn btn-secondary btn-icon" on:click={randomizeSeed}
+            disabled={$simStore.isPlaying} title="Generate a random seed and rebuild">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="4" ry="4"></rect>
+              <circle cx="8" cy="8" r="1.5" fill="currentColor"></circle>
+              <circle cx="16" cy="8" r="1.5" fill="currentColor"></circle>
+              <circle cx="8" cy="16" r="1.5" fill="currentColor"></circle>
+              <circle cx="16" cy="16" r="1.5" fill="currentColor"></circle>
+              <circle cx="12" cy="12" r="1.5" fill="currentColor"></circle>
+            </svg>
+          </button>
           <button class="btn btn-secondary" on:click={applyAgentQuantity}
-            disabled={$simStore.isPlaying} title="Rebuild graph with selected agent count">
+            disabled={$simStore.isPlaying} title="Rebuild graph with current agent count and seed">
             Apply
           </button>
         </div>
+        <p class="parameter-description">
+          Enter a number for a reproducible topology, or leave blank for a new random graph on each Apply.
+        </p>
       </div>
 
       {#if modelType === 'degroot'}

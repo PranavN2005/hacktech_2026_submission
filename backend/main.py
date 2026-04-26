@@ -59,11 +59,11 @@ _AGENTS_PATH = _resolve_agents_path()
 _N_AGENTS = _count_agents(_AGENTS_PATH)
 
 
-def _make_engine(agent_quantity: int) -> SimulationEngine:
+def _make_engine(agent_quantity: int, seed: int | None = None) -> SimulationEngine:
     return SimulationEngine(
         _AGENTS_PATH,
         agent_count=agent_quantity,
-        seed=None,
+        seed=seed,
         min_out_degree=10,
     )
 
@@ -118,7 +118,11 @@ async def init(
         None,
         ge=1,
         description="Number of agents to simulate (default: all agents in the loaded file)",
-    )
+    ),
+    seed: int | None = Query(
+        None,
+        description="Random seed for graph construction. Omit for a new random topology each call.",
+    ),
 ) -> dict:
     """
     Return agent metadata, follow-graph topology, and simulation defaults.
@@ -134,7 +138,7 @@ async def init(
             status_code=422,
             detail=f"agent_quantity={agent_quantity} exceeds the {_N_AGENTS} agents in {_AGENTS_PATH.name}.",
         )
-    engine = _make_engine(agent_quantity=agent_quantity)
+    engine = _make_engine(agent_quantity=agent_quantity, seed=seed)
 
     sc = engine.social_capital  # shape (N,), index-aligned with beliefs
     nodes = [
