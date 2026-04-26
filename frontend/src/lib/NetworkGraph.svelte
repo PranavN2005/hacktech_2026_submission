@@ -242,11 +242,15 @@
     <div class="network-legend">
       <div class="legend-title">Belief Spectrum</div>
       <div class="legend-gradient">
-        <div class="gradient-bar"></div>
-        <div class="gradient-labels">
-          <span>-1 Liberal</span>
+        <div class="gradient-labels gradient-labels--numeric">
+          <span>-1</span>
           <span>0</span>
-          <span>+1 Conservative</span>
+          <span>+1</span>
+        </div>
+        <div class="gradient-bar"></div>
+        <div class="gradient-labels gradient-labels--words">
+          <span>Liberal</span>
+          <span>Conservative</span>
         </div>
       </div>
     </div>
@@ -336,6 +340,20 @@
     justify-content: space-between;
     font-size: 9px;
     color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Numeric ticks above the bar — slightly stronger contrast, monospaced
+     feel via tabular alignment. */
+  .gradient-labels--numeric {
+    color: rgba(255, 255, 255, 0.7);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Word labels below the bar — only at the two extremes, so we keep
+     space-between to push them to the ends. */
+  .gradient-labels--words {
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
   }
 
   .network-controls {

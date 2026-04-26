@@ -465,7 +465,8 @@
     </div>
 
     <div class="preset-buttons">
-      <button class="btn btn-preset" on:click={() => simStore.applyPreset('chronological')}
+      <button class="btn btn-preset" class:active={$simStore.activePreset === 'chronological'}
+        on:click={() => simStore.applyPreset('chronological')}
         disabled={$simStore.isPlaying}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
@@ -473,14 +474,16 @@
         </svg>
         Chronological Feed
       </button>
-      <button class="btn btn-preset" on:click={() => simStore.applyPreset('engagement')}
+      <button class="btn btn-preset" class:active={$simStore.activePreset === 'engagement'}
+        on:click={() => simStore.applyPreset('engagement')}
         disabled={$simStore.isPlaying}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
         </svg>
         Engagement Maximized
       </button>
-      <button class="btn btn-preset" on:click={() => simStore.applyPreset('diversity')}
+      <button class="btn btn-preset" class:active={$simStore.activePreset === 'diversity'}
+        on:click={() => simStore.applyPreset('diversity')}
         disabled={$simStore.isPlaying}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
@@ -489,7 +492,8 @@
         </svg>
         Diversity Nudged
       </button>
-      <button class="btn btn-preset" on:click={() => simStore.applyPreset('echo_bubble')}
+      <button class="btn btn-preset" class:active={$simStore.activePreset === 'echo_bubble'}
+        on:click={() => simStore.applyPreset('echo_bubble')}
         disabled={$simStore.isPlaying}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
@@ -497,7 +501,8 @@
         </svg>
         Echo Bubble
       </button>
-      <button class="btn btn-preset" on:click={() => simStore.applyPreset('polarized')}
+      <button class="btn btn-preset" class:active={$simStore.activePreset === 'polarized'}
+        on:click={() => simStore.applyPreset('polarized')}
         disabled={$simStore.isPlaying}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="2" y1="12" x2="8" y2="12"></line>

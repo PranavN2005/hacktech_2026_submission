@@ -68,6 +68,10 @@ export interface SimulationState {
   selectedAgent: Agent | null;
   params: SimParams;
   dynamics: DynamicsConfig;
+  // Name of the preset whose settings are currently active. Cleared the
+  // moment the user touches any individual slider/dropdown so the chip
+  // never lies about the live config.
+  activePreset: string | null;
 }
 
 // Default parameters
@@ -108,6 +112,7 @@ const initialState: SimulationState = {
   selectedAgent: null,
   params: { ...defaultParams },
   dynamics: { ...defaultDynamics },
+  activePreset: null,
 };
 
 // Create the main store
@@ -161,6 +166,8 @@ function createSimStore() {
           typeof params.steps === 'number' && !state.isPlaying
             ? params.steps
             : state.totalSteps,
+        // Manual fiddling invalidates the "this matches preset X" claim.
+        activePreset: null,
       }));
     },
 
@@ -174,7 +181,7 @@ function createSimStore() {
         if (merged.repulsion_threshold_rho < eps) {
           merged.repulsion_threshold_rho = eps;
         }
-        return { ...state, dynamics: merged };
+        return { ...state, dynamics: merged, activePreset: null };
       });
     },
 
@@ -278,11 +285,19 @@ function createSimStore() {
       };
       const preset = presets[presetName];
       if (!preset) return;
-      update(state => ({
-        ...state,
-        params: { ...state.params, ...preset.params },
-        dynamics: { ...state.dynamics, ...preset.dynamics },
-      }));
+      update(state => {
+        // Re-clicking the active preset toggles it off; the params/dynamics
+        // are already this preset's so nothing else needs to change.
+        if (state.activePreset === presetName) {
+          return { ...state, activePreset: null };
+        }
+        return {
+          ...state,
+          params: { ...state.params, ...preset.params },
+          dynamics: { ...state.dynamics, ...preset.dynamics },
+          activePreset: presetName,
+        };
+      });
     },
   };
 }

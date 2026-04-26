@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onDestroy } from 'svelte';
   import embed, { type VisualizationSpec, type Result } from 'vega-embed';
   import { simStore, type MetricPoint } from './store';
 
@@ -9,7 +9,17 @@
   let container: HTMLDivElement;
   let vegaResult: Result | null = null;
 
-  const spec: VisualizationSpec = {
+  function buildSpec(): VisualizationSpec {
+    const yDomain = metric === 'polarization' ? [0, 0.2] : [0, 1];
+    // Restrict the colour scale to the series this chart actually plots —
+    // otherwise Vega renders a phantom legend entry for the unused series.
+    const colorDomain = metric === 'polarization'
+      ? ['Normalized ER', 'Raw ER']
+      : ['Echo'];
+    const colorRange = metric === 'polarization'
+      ? ['#3b82f6', '#f59e0b']
+      : ['#3b82f6'];
+    return {
     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
     width: 'container',
     height: 120,
@@ -50,7 +60,7 @@
             field: 'value',
             type: 'quantitative',
             title: null,
-            scale: { domain: [0, 1] }
+            scale: { domain: yDomain, clamp: true }
           },
           color: {
             field: 'series',
@@ -63,13 +73,11 @@
                   labelColor: '#9ca3af',
                   labelFont: 'Inter, system-ui, sans-serif',
                   labelFontSize: 10,
-                  symbolSize: 80
+                  symbolSize: 80,
+                  anchor: 'middle'
                 }
               : null,
-            scale: {
-              domain: ['Normalized ER', 'Raw ER', 'Echo'],
-              range: ['#3b82f6', '#f59e0b', '#3b82f6']
-            }
+            scale: { domain: colorDomain, range: colorRange }
           }
         }
       },
@@ -86,10 +94,7 @@
             field: 'series',
             type: 'nominal',
             legend: null,
-            scale: {
-              domain: ['Normalized ER', 'Raw ER', 'Echo'],
-              range: ['#3b82f6', '#f59e0b', '#3b82f6']
-            }
+            scale: { domain: colorDomain, range: colorRange }
           },
           opacity: {
             condition: { test: 'datum.step === datum.maxStep', value: 1 },
@@ -98,16 +103,24 @@
         }
       }
     ]
-  };
+  }; }
 
   async function initChart() {
     if (!container) return;
-
+    // Always finalize first so re-inits (HMR, metric prop change) don't leak.
+    if (vegaResult) {
+      vegaResult.finalize();
+      vegaResult = null;
+    }
     try {
-      vegaResult = await embed(container, spec, {
+      vegaResult = await embed(container, buildSpec(), {
         actions: false,
         renderer: 'canvas'
       });
+      // Re-populate data if there's already a history when we (re)init.
+      if ($simStore.metricsHistory.length > 0) {
+        updateChart($simStore.metricsHistory);
+      }
     } catch (e) {
       console.error('Failed to initialize Vega chart:', e);
     }
@@ -146,9 +159,9 @@
     ).run();
   }
 
-  onMount(() => {
-    initChart();
-  });
+  // Reactive on container so the chart initializes as soon as the DOM node
+  // exists, and also re-initializes on HMR remounts (which re-bind container).
+  $: container && initChart();
 
   $: if (vegaResult && $simStore.metricsHistory) {
     updateChart($simStore.metricsHistory);

@@ -48,7 +48,7 @@ _K_ER: float = 1.0  # scale constant
 class SimState:
     step: int
     beliefs: np.ndarray      # shape (N,), values ∈ [-1, 1]
-    polarization: float      # Esteban-Ray index ≥ 0
+    polarization: float      # Esteban-Ray index ≥ 0 (Louvain graph clusters)
     echo_coefficient: float  # ∈ [0, 1]
     # Raw ER is kept for continuity; this display-oriented value scales it by
     # the max possible ER for the current Louvain community sizes.
@@ -282,15 +282,18 @@ class SimulationEngine:
 
         self._B = new_B
         self._current_step += 1
-        # Cache an F-shaped object so get_metrics()/echo coefficient still
-        # have something meaningful to work with after a config-driven step.
-        self._last_F = W_hat
+        # Echo coefficient must be computed against the *feed* matrix (what
+        # was shown to the user), not the post-compatibility influence
+        # matrix W_hat. Cache F_feed = row-normalize(A · W_base · M) so the
+        # echo metric stays definitionally consistent across model types.
+        F_feed = safe_row_normalize(A * W_base * M)
+        self._last_F = F_feed
 
         # ── Diagnostics ───────────────────────────────────────────────
         # Echo / Esteban-Ray are computed exactly as before so the primary
         # metrics remain comparable across modes.
         new_dist = compute_distances(new_B)
-        pol, pol_norm, echo = self._compute_metrics(W_hat, new_dist)
+        pol, pol_norm, echo = self._compute_metrics(F_feed, new_dist)
         diagnostics = self._compute_diagnostics(W_hat, new_dist, M)
 
         return SimState(
@@ -434,7 +437,7 @@ class SimulationEngine:
         """
         B = self._B
         belief_diff = np.abs(B[:, None] - B[None, :])
-        pol, echo = self._compute_metrics(self._last_F, belief_diff)
+        pol, pol_norm, echo = self._compute_metrics(self._last_F, belief_diff)
         communities = self._louvain_communities()
         centroids = {
             f"cluster_{k}": float(B[list(c)].mean())
@@ -443,6 +446,7 @@ class SimulationEngine:
         return {
             "step": self._current_step,
             "polarization": pol,
+            "polarization_normalized": pol_norm,
             "echo_coefficient": echo,
             "cluster_centroids": centroids,
         }
@@ -523,9 +527,16 @@ class SimulationEngine:
         E(t) = 1 − mean_feed_distance(t) / mean_population_distance(t)
 
         mean_feed_distance   : average |b_i−b_j| weighted by F[i,j] over all edges
-        mean_population_dist : average |b_i−b_j| over all (i,j) pairs
+        mean_population_dist : average |b_i−b_j| over all distinct (i,j) pairs
+                               (off-diagonal — self-pairs are 0 and would
+                               otherwise deflate the denominator).
         """
-        mean_pop = float(belief_diff.mean())
+        N = self.N
+        if N > 1:
+            off_diag = ~np.eye(N, dtype=bool)
+            mean_pop = float(belief_diff[off_diag].mean())
+        else:
+            mean_pop = 0.0
         if mean_pop == 0.0:
             return 0.0
 
