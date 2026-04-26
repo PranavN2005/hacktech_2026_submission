@@ -1,4 +1,6 @@
-# Hacktech 2026 Submission
+# ECHO Lab — Echo Chamber Heuristics Observation Lab
+
+Hacktech 2026 Submission
 
 ## Collaborators
 

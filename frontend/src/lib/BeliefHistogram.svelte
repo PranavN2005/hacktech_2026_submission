@@ -9,7 +9,7 @@
   const spec: VisualizationSpec = {
     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
     width: 'container',
-    height: 120,
+    height: 140,
     padding: { left: 5, right: 5, top: 5, bottom: 5 },
     background: 'transparent',
     config: {
@@ -99,6 +99,8 @@
     }
   });
 
+  $: isEmpty = $simStore.beliefs.length === 0 || !$simStore.isInitialized;
+
   // Sarle's Bimodality Coefficient: BC = (skewness² + 1) / kurtosis
   // Threshold: BC > 5/9 ≈ 0.556 indicates bimodal tendency.
   // A single cluster (low variance) correctly returns 0; a perfect half-at-±1
@@ -140,5 +142,16 @@
       </button>
     </div>
   </div>
-  <div bind:this={container} class="chart-wrapper"></div>
+  <div bind:this={container} class="chart-wrapper">
+    {#if isEmpty}
+      <div class="chart-empty-state" aria-hidden="true">
+        <svg class="chart-empty-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--text-muted)">
+          <rect x="2" y="3" width="4" height="18" rx="1"></rect>
+          <rect x="10" y="8" width="4" height="13" rx="1"></rect>
+          <rect x="18" y="13" width="4" height="8" rx="1"></rect>
+        </svg>
+        <span class="chart-empty-label">Run a simulation to see data</span>
+      </div>
+    {/if}
+  </div>
 </div>

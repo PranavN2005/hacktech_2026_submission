@@ -58,7 +58,8 @@
           <path d="M12 8h.01"></path>
         </svg>
       </div>
-      <h1>EchoChamber</h1>
+      <h1>ECHO Lab</h1>
+      <span class="header-subtitle">Echo Chamber Heuristics Observation Lab</span>
     </div>
     
     <div class="header-status">
