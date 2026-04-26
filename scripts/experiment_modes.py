@@ -172,7 +172,7 @@ def main() -> None:
     ap.add_argument(
         "--agents-path",
         type=Path,
-        default=Path(os.environ.get("AGENTS_PATH", "agents_500_pro_max.json")),
+        default=Path(os.environ.get("AGENTS_PATH", "pop100.json")),
     )
     ap.add_argument("--agents", type=int, default=200, help="how many agents to sample")
     ap.add_argument("--steps", type=int, default=40)

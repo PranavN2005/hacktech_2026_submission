@@ -1,11 +1,15 @@
 import { writable, derived } from 'svelte/store';
 
 // Types
+//
+// `bio` may be null when the population is loaded from a pipeline file
+// whose stage-3 (LLM bio generation) has not been run yet. The simulation
+// itself does not consume `bio`, so a null is presentational only.
 export interface Agent {
   id: number;
   persona_id?: number | string;
   name: string;
-  bio: string;
+  bio: string | null;
   initial_belief: number;
   susceptibility: number;
   social_capital: number;

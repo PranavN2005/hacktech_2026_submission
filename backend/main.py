@@ -18,23 +18,57 @@ from backend.engine import SimulationEngine
 
 app = FastAPI(title="EchoChamber Backend", version="0.3.0")
 
-_AGENTS_PATH = Path(os.environ.get("AGENTS_PATH", "agents_500_pro_max.json"))
-if not _AGENTS_PATH.exists():
+# ---------------------------------------------------------------------------
+# Population file resolution
+#
+# Resolution order:
+#     1. AGENTS_PATH environment variable (explicit override).
+#     2. population.json  — preferred pipeline output (any N).
+#     3. agents_500_pro_max.json — legacy flat-array fallback.
+#
+# After resolving the path, _N_AGENTS is derived from the file itself so
+# every downstream constant (engine default, /init cap) adapts automatically.
+# No more hard-coded 500s.
+# ---------------------------------------------------------------------------
+
+def _resolve_agents_path() -> Path:
+    explicit = os.environ.get("AGENTS_PATH")
+    if explicit:
+        return Path(explicit)
+    for candidate in ("population.json", "agents_500_pro_max.json"):
+        p = Path(candidate)
+        if p.exists():
+            return p
     raise RuntimeError(
-        f"Agents file not found at {_AGENTS_PATH.resolve()}. "
-        "Set the AGENTS_PATH env var or ensure agents_500_pro_max.json is present."
+        "No agents file found. Run:\n"
+        "  python generate_population.py sample --n 500 --seed 0 --out population.json\n"
+        "or set AGENTS_PATH to point at an existing population JSON."
     )
+
+
+def _count_agents(path: Path) -> int:
+    """Count agents in a population file without building the full engine."""
+    with path.open(encoding="utf-8") as f:
+        raw = json.load(f)
+    if isinstance(raw, list):
+        return len(raw)
+    return len(raw.get("agents", []))
+
+
+_AGENTS_PATH = _resolve_agents_path()
+_N_AGENTS = _count_agents(_AGENTS_PATH)
+
 
 def _make_engine(agent_quantity: int) -> SimulationEngine:
     return SimulationEngine(
         _AGENTS_PATH,
         agent_count=agent_quantity,
-        seed=42,
+        seed=None,
         min_out_degree=10,
     )
 
 
-engine = _make_engine(agent_quantity=500)
+engine = _make_engine(agent_quantity=_N_AGENTS)
 
 app.add_middleware(
     CORSMiddleware,
@@ -81,10 +115,9 @@ _DEFAULTS = {
 @app.get("/init")
 async def init(
     agent_quantity: int = Query(
-        500,
+        None,
         ge=1,
-        le=500,
-        description="Number of agents to simulate (randomly sampled up to 500)",
+        description="Number of agents to simulate (default: all agents in the loaded file)",
     )
 ) -> dict:
     """
@@ -94,6 +127,13 @@ async def init(
     emitted by `/stream`, so `nodes[i].id == i` always holds.
     """
     global engine
+    if agent_quantity is None:
+        agent_quantity = _N_AGENTS
+    if agent_quantity > _N_AGENTS:
+        raise HTTPException(
+            status_code=422,
+            detail=f"agent_quantity={agent_quantity} exceeds the {_N_AGENTS} agents in {_AGENTS_PATH.name}.",
+        )
     engine = _make_engine(agent_quantity=agent_quantity)
 
     sc = engine.social_capital  # shape (N,), index-aligned with beliefs

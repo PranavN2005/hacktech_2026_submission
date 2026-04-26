@@ -1,3 +1,25 @@
+"""
+DEPRECATED legacy persona generator.
+
+This module produced agents by asking an LLM to invent both the bio AND the
+numerical fields (initial_belief, susceptibility) in a single call. That
+violates the architectural invariant of the new pipeline:
+
+    The LLM is never allowed to produce numerical values.
+
+The replacement is the three-stage pipeline in `backend.persona_pipeline`,
+driven via `generate_population.py`:
+
+    python generate_population.py sample --n 500 --seed 0 --out population.json
+    python generate_population.py bios --input population.json --model gpt-4o-mini
+
+This file is kept for short-term comparison runs only and will be removed
+once the new pipeline is fully validated. New code should not import from
+here.
+
+Setting `USE_LEGACY_PERSONA_GENERATION = True` and running this module
+(or `generate_population.py legacy`) re-enables the old behaviour.
+"""
 from __future__ import annotations
 
 import argparse
@@ -5,8 +27,14 @@ import json
 import math
 import os
 import sys
+import warnings
 from pathlib import Path
 from typing import Any, Optional
+
+
+# Master toggle. Defaults to False so accidental imports don't quietly
+# resurrect the old code path. Set True to allow the CLI to run.
+USE_LEGACY_PERSONA_GENERATION: bool = False
 
 
 DEFAULT_GEMINI_MODEL = "gemini-3-flash-preview"
@@ -326,7 +354,35 @@ def main(argv: list[str]) -> int:
         help="Max output tokens for the Gemini response (default: 8192).",
     )
 
+    p.add_argument(
+        "--allow-legacy",
+        action="store_true",
+        help=(
+            "Acknowledge that this is the deprecated one-shot generator and run "
+            "anyway. Without this flag the CLI exits with an instruction to use "
+            "the new pipeline."
+        ),
+    )
+
     args = p.parse_args(argv)
+
+    if not (USE_LEGACY_PERSONA_GENERATION or args.allow_legacy):
+        print(
+            "persona_gen.py is deprecated. Use the structured pipeline instead:\n"
+            "  python generate_population.py sample --n 500 --seed 0 --out population.json\n"
+            "  python generate_population.py bios --input population.json --model gpt-4o-mini\n\n"
+            "If you really want the legacy behaviour, pass --allow-legacy or set "
+            "USE_LEGACY_PERSONA_GENERATION=True at the top of persona_gen.py.",
+            file=sys.stderr,
+        )
+        return 2
+
+    warnings.warn(
+        "persona_gen.py is deprecated; use generate_population.py instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     try:
         api_key = (args.api_key or os.environ.get("GEMINI_API_KEY") or "").strip()
         if not api_key:

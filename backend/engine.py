@@ -124,6 +124,39 @@ class SimulationEngine:
             [float(a.get("activity", 1.0)) for a in self._agents], dtype=np.float64
         )
 
+        # ── Pipeline-sourced per-agent attributes ────────────────────────
+        # These come from the structured persona pipeline (persona_pipeline.py).
+        # Defaults are chosen to be dynamically neutral so legacy flat-array
+        # agent files continue to work without change.
+        #
+        # belief_uncertainty (σ, pipeline field "sigma"):
+        #   Scales per-agent noise in the belief update.  Default = 1.0 keeps
+        #   noise_sigma uniform (= legacy behaviour).
+        #
+        # emotional_reactivity (e):
+        #   Boosts selective-exposure beta for reactive agents, amplifying echo
+        #   chamber effects.  Default = 0.0 → no boost (legacy behaviour).
+        #
+        # topic_salience (q):
+        #   Scales how strongly an agent updates when influenced.  Extreme
+        #   believers care more and process content faster.  Default = 1.0 →
+        #   unscaled (legacy behaviour).
+        #
+        # rigidity (g) is already encoded in repulsion_threshold_rho and
+        # repulsion_strength_gamma so it needs no separate array here.
+        self._belief_uncertainty: np.ndarray = np.array(
+            [float(a.get("belief_uncertainty", 1.0)) for a in self._agents],
+            dtype=np.float64,
+        )
+        self._emotional_reactivity: np.ndarray = np.array(
+            [float(a.get("emotional_reactivity", 0.0)) for a in self._agents],
+            dtype=np.float64,
+        )
+        self._topic_salience: np.ndarray = np.array(
+            [float(a.get("topic_salience", 1.0)) for a in self._agents],
+            dtype=np.float64,
+        )
+
         # Mutable state
         self._B: np.ndarray = self._B0.copy()
         self._current_step: int = 0
@@ -244,13 +277,19 @@ class SimulationEngine:
         rho = self._resolve_per_agent(config, "repulsion_threshold_rho")
         gamma = self._resolve_per_agent(config, "repulsion_strength_gamma")
 
+        # Emotionally reactive agents have stronger selective exposure:
+        # their feeds rank opinion-similar content more aggressively, amplifying
+        # echo-chamber formation.  Multiplier is (1 + e_i) so that e=0 agents
+        # (the legacy default) see no change.
+        effective_beta_sel = beta_sel * (1.0 + self._emotional_reactivity)
+
         # ── Layer 1: exposure mask M(t) over the static follow graph ──
         M = exposure_mask(
             config.exposure_mode,
             A,
             dist,
             activity=self._activity,
-            selective_beta=beta_sel,
+            selective_beta=effective_beta_sel,
             top_k=config.top_k_visible,
             rng=self._rng,
         )
@@ -319,16 +358,24 @@ class SimulationEngine:
         """
         Standard DeGroot-style update using a per-tick row-stochastic Ŵ.
 
-            x_i(t+1) = x_i(t) + s_i · Σ_j Ŵ_{ij} · (x_j - x_i) + ξ_i
+            x_i(t+1) = x_i(t) + s_i · q_i · Σ_j Ŵ_{ij} · (x_j - x_i) + ξ_i
+
+        `q_i` (topic_salience) ∈ [0.5, 1] from the pipeline; agents with
+        extreme beliefs care more and update faster.  Defaults to 1.0 for
+        legacy agents (no change in dynamics).
 
         Rows of Ŵ that are all-zero (no compatible visible neighbour) freeze
         the agent at its current belief, which avoids divide-by-zero NaNs.
+
+        Noise ξ_i ~ N(0, noise_sigma · σ_i) where σ_i (belief_uncertainty)
+        scales how erratically the agent's position drifts; defaults to 1.0.
         """
         wstar_row_sum = W_hat.sum(axis=1)
-        delta = self._sigma * (W_hat @ B - B * wstar_row_sum)
+        delta = self._sigma * self._topic_salience * (W_hat @ B - B * wstar_row_sum)
         new_B = B + delta
         if config.noise_sigma > 0:
-            new_B = new_B + self._rng.normal(0.0, config.noise_sigma, size=B.shape)
+            noise = self._rng.normal(0.0, config.noise_sigma, size=B.shape)
+            new_B = new_B + noise * self._belief_uncertainty
         return new_B
 
     def _repulsive_weights(
@@ -363,17 +410,21 @@ class SimulationEngine:
         """
         Incremental update for the repulsive bounded-confidence model:
 
-            x_i(t+1) = x_i(t) + s_i · Σ_j Ŵ_{ij}(t) · φ_i(x_j - x_i) + ξ_i
+            x_i(t+1) = x_i(t) + s_i · q_i · Σ_j Ŵ_{ij}(t) · φ_i(x_j - x_i) + ξ_i
+
+        `q_i` (topic_salience) and noise scaling by `σ_i` (belief_uncertainty)
+        follow the same convention as `_update_matrix_form`; see its docstring.
 
         A convex weighted average cannot encode negative influence, so we
         sum φ(Δ) per-edge and weight by Ŵ — visible-followed-only.
         """
         delta_mat = B[None, :] - B[:, None]               # Δ_{ij} = x_j - x_i
         phi = phi_repulsive(delta_mat, epsilon=eps, rho=rho, gamma=gamma)
-        update = self._sigma * (W_hat * phi).sum(axis=1)
+        update = self._sigma * self._topic_salience * (W_hat * phi).sum(axis=1)
         new_B = B + update
         if config.noise_sigma > 0:
-            new_B = new_B + self._rng.normal(0.0, config.noise_sigma, size=B.shape)
+            noise = self._rng.normal(0.0, config.noise_sigma, size=B.shape)
+            new_B = new_B + noise * self._belief_uncertainty
         return new_B
 
     def _resolve_per_agent(
@@ -563,12 +614,12 @@ def _build_follow_graph(N: int, min_out_degree: int, seed: Optional[int]) -> nx.
     """
     Build a directed scale-free follow graph with a guaranteed minimum out-degree.
 
-    Step 1 – scale_free_graph with beta-heavy parameterisation:
+    Step 1 - scale_free_graph with beta-heavy parameterisation:
         Raising beta (edge-between-existing-nodes probability) increases the
         average degree while preserving the power-law in-degree distribution.
         alpha + beta + gamma must equal 1.0.
 
-    Step 2 – Post-process minimum out-degree:
+    Step 2 - Post-process minimum out-degree:
         For every node whose out-degree is still below `min_out_degree`, sample
         uniformly from the pool of nodes it does not yet follow and add edges.
         This ensures bounded confidence always has reachable neighbours while
@@ -613,10 +664,38 @@ def _build_follow_graph(N: int, min_out_degree: int, seed: Optional[int]) -> nx.
 
 
 def _load_agents(path: Path) -> list[dict]:
+    """
+    Load an agents JSON file into the engine's expected dict shape.
+
+    Two formats are accepted:
+
+    1. Legacy flat array (used by `agents_500_pro_max.json` and the inline
+       fixtures in tests). Returned as-is.
+
+    2. New persona-pipeline payload `{"metadata": {...}, "agents": [...]}`
+       produced by `backend.persona_pipeline.generate_population_json`.
+       Field names are translated through `load_population` so the engine
+       sees `initial_belief`, `susceptibility`, `activity`, plus the
+       per-agent override fields (`confidence_epsilon`, `selective_exposure_beta`,
+       `repulsion_threshold_rho`, `repulsion_strength_gamma`).
+
+    Keeping the legacy branch lets existing tests and the original 500-agent
+    fixture continue to work unchanged.
+    """
     if not path.exists():
         raise FileNotFoundError(f"agents file not found: {path}")
     with path.open(encoding="utf-8") as f:
-        agents = json.load(f)
-    if not isinstance(agents, list) or not agents:
-        raise ValueError("agents.json must be a non-empty JSON array.")
-    return agents
+        raw = json.load(f)
+    if isinstance(raw, list):
+        if not raw:
+            raise ValueError("agents.json must be a non-empty JSON array.")
+        return raw
+    if isinstance(raw, dict) and "agents" in raw:
+        # Local import to avoid a hard module-level coupling: persona_pipeline
+        # is only needed when a pipeline-format file is encountered.
+        from backend.persona_pipeline import load_population
+        return load_population(path)
+    raise ValueError(
+        f"{path} is neither a flat agent JSON array nor a "
+        "persona-pipeline payload."
+    )
