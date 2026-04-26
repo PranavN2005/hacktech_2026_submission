@@ -22,7 +22,7 @@
     return {
     $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
     width: 'container',
-    height: 120,
+    height: 108,
     padding: { left: 5, right: 5, top: 5, bottom: 5 },
     background: 'transparent',
     config: {
@@ -190,6 +190,8 @@
         : currentPoint.echo)
     : 0;
 
+  $: isEmpty = $simStore.metricsHistory.length === 0 && !$simStore.isPlaying;
+
   $: metricHelpText =
     metric === 'polarization'
       ? 'Esteban-Ray polarization shown two ways: normalized ER (blue, 0-1 display scale) and raw ER (amber, literature formula). Normalized ER divides raw ER by the max possible value for the current graph-community sizes.'
@@ -214,5 +216,14 @@
       </button>
     </div>
   </div>
-  <div bind:this={container} class="chart-wrapper"></div>
+  <div bind:this={container} class="chart-wrapper">
+    {#if isEmpty}
+      <div class="chart-empty-state" aria-hidden="true">
+        <svg class="chart-empty-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" color="var(--text-muted)">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+        <span class="chart-empty-label">Run a simulation to see data</span>
+      </div>
+    {/if}
+  </div>
 </div>
