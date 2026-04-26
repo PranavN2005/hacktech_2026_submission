@@ -16,7 +16,11 @@ from backend.engine import SimulationEngine
 # App + engine setup
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="EchoChamber Backend", version="0.3.0")
+app = FastAPI(
+    title="ECHO Lab — Echo Chamber Heuristics Observation Lab",
+    description="Backend simulation engine for the ECHO Lab opinion dynamics platform.",
+    version="0.3.0",
+)
 
 # ---------------------------------------------------------------------------
 # Population file resolution

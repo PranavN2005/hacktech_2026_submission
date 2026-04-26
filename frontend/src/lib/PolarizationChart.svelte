@@ -74,7 +74,8 @@
                   labelFont: 'Inter, system-ui, sans-serif',
                   labelFontSize: 10,
                   symbolSize: 80,
-                  anchor: 'middle'
+                  columns: 2,
+                  columnPadding: 16
                 }
               : null,
             scale: { domain: colorDomain, range: colorRange }
