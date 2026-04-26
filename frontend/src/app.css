@@ -349,6 +349,27 @@ input[type="range"]::-moz-range-thumb {
   border: none;
 }
 
+/* Suppress browser default focus ring on mouse interaction only */
+input[type="range"]:focus {
+  outline: none;
+}
+
+/* Visible keyboard focus ring on the thumb (works across all engines) */
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--accent);
+}
+
+input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--accent);
+}
+
+/* Fallback outline on the track for engines that ignore thumb shadows */
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
 /* Presets */
 .preset-buttons {
   display: flex;
